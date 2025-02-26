@@ -1,0 +1,36 @@
+runtime: python39  # Specify Python runtime (use the version supported by Google Cloud)
+
+entrypoint: gunicorn -b :$PORT fitfocus.wsgi:application  # Start the app with Gunicorn
+
+env_variables:
+  CLOUD_SQL_CONNECTION_NAME: carbide-cairn-451020-k0:europe-west2:fitfocusup-db #
+  DJANGO_SETTINGS_MODULE: "fitfocus.settings"  # Make sure the correct settings module is set
+  # Add other environment variables here, like database credentials, API keys, etc.
+
+instance_class: F2  # Optional: You can specify the instance class, adjust for scaling needs
+
+automatic_scaling:
+  target_cpu_utilization: 0.65  # Optional: scaling configuration
+  min_instances: 1
+  max_instances: 5
+
+handlers:
+  # Static file serving for the REST API if needed (e.g., if you have static files like images or JS)
+  - url: /static
+    static_dir: static/
+
+  # Serve media files if your application serves files like images or PDFs
+  - url: /media
+    static_dir: media/
+
+  # All other requests are handled by Django's application (via Gunicorn)
+  - url: /.*  # Catch-all URL for all incoming requests
+    script: auto  # This directs traffic to Gunicorn
+
+# Optional: You can specify custom health checks if needed
+health_check:
+  enable_health_check: True
+  check_interval_sec: 5
+  timeout_sec: 4
+  unhealthy_threshold: 2
+  healthy_threshold: 2
