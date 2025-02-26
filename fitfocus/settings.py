@@ -88,7 +88,7 @@ DATABASES = {
         'NAME': 'fitfocusdb',
         'USER': 'admin',
         'PASSWORD': 'fixMy40Comp$',
-        'HOST': '34.42.244.106',
+        'HOST': '34.29.45.194',
         'PORT': '5432',
     }
 }
