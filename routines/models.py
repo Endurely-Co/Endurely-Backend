@@ -36,68 +36,29 @@ class FitnessRoutine(models.Model):
     created_at = models.DateTimeField(default=now, null=False)
 
 
-class Nutrition(models.Model):
-    NUTRIENT_CHOICES = [
-        ("CAL", "Calories"),
-        ("PRO", "Protein"),
-        ("CARB", "Carbohydrates"),
-        ("FAT", "Total Fat"),
-        ("SFAT", "Saturated Fat"),
-        ("TFAT", "Trans Fat"),
-        ("CHOL", "Cholesterol"),
-        ("SOD", "Sodium"),
-        ("POT", "Potassium"),
-        ("FIB", "Dietary Fiber"),
-        ("SUG", "Sugars"),
-        ("VITA", "Vitamin A"),
-        ("VITC", "Vitamin C"),
-        ("VITD", "Vitamin D"),
-        ("VITE", "Vitamin E"),
-        ("VITK", "Vitamin K"),
-        ("VITB1", "Thiamine (Vitamin B1)"),
-        ("VITB2", "Riboflavin (Vitamin B2)"),
-        ("VITB3", "Niacin (Vitamin B3)"),
-        ("VITB5", "Pantothenic Acid (Vitamin B5)"),
-        ("VITB6", "Vitamin B6"),
-        ("VITB7", "Biotin (Vitamin B7)"),
-        ("VITB9", "Folate (Vitamin B9)"),
-        ("VITB12", "Vitamin B12"),
-        ("CALC", "Calcium"),
-        ("IRON", "Iron"),
-        ("MAG", "Magnesium"),
-        ("PHOS", "Phosphorus"),
-        ("ZINC", "Zinc"),
-        ("COPP", "Copper"),
-        ("MANG", "Manganese"),
-        ("SELE", "Selenium"),
-        ("IOD", "Iodine"),
-        ("CHRO", "Chromium"),
-        ("MOLY", "Molybdenum"),
-        ("OMEGA3", "Omega-3 Fatty Acids"),
-        ("OMEGA6", "Omega-6 Fatty Acids"),
-        ("WATER", "Water"),
-    ]
-
+class NutritionInfo(models.Model):
     created_at = models.DateTimeField(default=now, null=False)
-    nutrient = models.CharField(max_length=50, default=NUTRIENT_CHOICES[0], choices=NUTRIENT_CHOICES)
+    nutrient = models.CharField(max_length=1000, default='', null=False)
     food_name = models.CharField(max_length=100, null=False, default='')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
-class MealRecommendation(models.Model):
+# todo: remove model
+class Nutrition(models.Model):
     created_at = models.DateTimeField(default=now, null=False)
+    nutrient = models.CharField(max_length=1000, default='', null=False)
+    food_name = models.CharField(max_length=100, null=False, default='')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    recommended_meal = models.CharField(max_length=100)
 
 
-class FitnessRecommendation(models.Model):
-    SEX = [
-        ('M', 'Male'),
-        ('F', 'Female'),
-        ('P', 'Prefer not to say')
-    ]
-    created_at = models.DateTimeField(default=now, null=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    height = models.FloatField(null=False, default=0)
-    sex = models.CharField(default=SEX[-1], choices=SEX, max_length=20)
-    fitness_goal = models.CharField(null=False, default='')
+# class FitnessRecommendation(models.Model):
+#     SEX = [
+#         ('M', 'Male'),
+#         ('F', 'Female'),
+#         ('P', 'Prefer not to say')
+#     ]
+#     created_at = models.DateTimeField(default=now, null=False)
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     height = models.FloatField(null=False, default=0)
+#     sex = models.CharField(default=SEX[-1], choices=SEX, max_length=20)
+#     fitness_goal = models.CharField(null=False, default='')

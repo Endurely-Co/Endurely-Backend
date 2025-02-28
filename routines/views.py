@@ -1,9 +1,11 @@
+from django.db import transaction
 from django.http import Http404
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import permissions, viewsets, status
 from utils.api import api_success, api_error, api_created_success
+from .gemini import GeminiApi
 
 from .models import Exercise, FitnessRoutine
 from .serializers import GetExercisesSerializer, CategoriesSerializer, FitnessRoutineSerializer, NutritionSerializer
@@ -84,10 +86,25 @@ class FitnessRoutineView(AuthenticatedAPIView):
         snippet.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
 class NutritionView(AuthenticatedAPIView):
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.gemini = GeminiApi()
 
     def post(self, request):
-        serializer = NutritionSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
+        food = request.data.get('food_name')
+        if food and len(food) > 2:
+            response = request.data
+            response["nutrient"] = self.gemini.nutrients_from_food(food)
+            serializer = NutritionSerializer(data=response)
+
+            if serializer.is_valid():
+                print('nutrient', response)
+                serializer.save()
+                return api_success(response)
+            else:
+                return api_error("Sorry, you can't use this service at the moment.")
+        else:
+            return api_error("Food/drink is invalid. Try again!")
