@@ -24,7 +24,7 @@ SECRET_KEY = 'django-insecure-vkh!7u^ctybo8_vrod2e5v-ion3^xn=gi9)!+f35l6+&-*g)2s
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["carbide-cairn-451020-k0.nw.r.appspot.com", "127.0.0.1"]
+ALLOWED_HOSTS = ["carbide-cairn-451020-k0.nw.r.appspot.com", "127.0.0.1", "localhost"]
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'onboarding',
+    'routines',
     'utils'
 ]
 
@@ -88,12 +89,13 @@ DATABASES = {
         'NAME': 'fitfocusdb',
         'USER': 'admin',
         'PASSWORD': 'fixMy40Comp$',
-        'HOST': '34.29.45.194',
+        'HOST': '34.123.107.179',
         'PORT': '5432',
     }
 }
 
 # psql -h 34.42.244.106 -U admin -d fitfocusdb
+# gunicorn --bind 0.0.0.0:8000 fitfocus.wsgi
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

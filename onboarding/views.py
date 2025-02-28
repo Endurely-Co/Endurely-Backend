@@ -1,6 +1,6 @@
 from django.db.utils import IntegrityError
 
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -9,7 +9,7 @@ from utils.exceptions import InvalidNameException, WeakPasswordError
 from utils.validator import Messages, validate_email, \
     validate_username, check_password, check_name
 from django.core import serializers
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, logout
 import json
 
 from django.contrib.auth.models import User
@@ -90,6 +90,13 @@ class LoginView(APIView):
                 "refresh_token": tokens['refresh'],  # Refresh token for re-authentication
             })
         return api_error("Invalid username or password")
+
+
+class Logout(APIView):
+    def get(self, request):
+        # simply delete the token to force a login
+        logout(request)
+        return Response(status=status.HTTP_200_OK)
 
 
 class CreateGetOTPView(generics.CreateAPIView):
