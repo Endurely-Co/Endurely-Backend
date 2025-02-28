@@ -1,6 +1,7 @@
 """
 
 """
+from rest_framework import status
 from rest_framework.response import Response
 
 from utils.validator import Status, Messages
@@ -37,9 +38,12 @@ def api_success(value):
     return Response(data={"data": value}, status=Status.SUCCESS, )
 
 
+def api_created_success(value):
+    return Response(data={"data": value}, status=status.HTTP_201_CREATED, )
+
+
 def api_error(msg: str):
-    return Response(status=Status.INVALID_REQUEST, data= {
+    return Response(status=Status.INVALID_REQUEST, data={
         "code": Status.INVALID_REQUEST,
         "message": msg if msg else Messages.generic_error()
     })
-

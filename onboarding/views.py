@@ -4,7 +4,7 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from utils.api import api_error, api_success, check_input
+from utils.api import api_error, api_success, check_input, api_created_success
 from utils.exceptions import InvalidNameException, WeakPasswordError
 from utils.validator import Messages, validate_email, \
     validate_username, check_password, check_name
@@ -45,7 +45,7 @@ class CreateAccountView(generics.CreateAPIView):
                 user.acct_type = AccountType.unverify
                 user.save()
 
-                return api_success({
+                return api_created_success({
                     "username": user.username,
                     "first_name": user.first_name,
                     "last_name": user.last_name,
@@ -82,6 +82,7 @@ class LoginView(APIView):
         if user:
             tokens = get_tokens_for_user(user)  # Generate JWT tokens
             return api_success({
+                "user_id": user.id,
                 "username": user.username,
                 "first_name": user.first_name,
                 "last_name": user.last_name,
@@ -187,7 +188,7 @@ class CreateGetOTPView(generics.CreateAPIView):
 
             # returns all the data from the OTP.
             # "user" displays the username as User objects will not be displayed in a JSON format for security reasons, 
-            return api_success({
+            return api_created_success({
                 "user": new_otp.user.username,
                 "otp": new_otp.otp,
                 "created_at": new_otp.created_at,
@@ -239,6 +240,6 @@ class ValidateOTPView(generics.CreateAPIView):
             return api_error(f"The OTP has expired. Request a new OTP.")
 
         if request.data["otp"].strip() == stored_otp.otp:
-            return api_success("success")
+            return api_created_success("success")
         else:
             return api_error("The OTP is incorrect.")

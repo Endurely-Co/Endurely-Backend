@@ -21,5 +21,6 @@ from onboarding import urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('onboarding/', include('onboarding.urls'))
+    path('onboarding/', include('onboarding.urls')),
+    path('routines/', include('routines.urls'))
 ]
