@@ -22,8 +22,6 @@ class FitnessGoals(AuthenticatedAPIView):
             })
         return api_success(goals)
 
-    def post(self, request, *args, **kwargs):
-        pass
 
 
 class FitnessRecommendationView(AuthenticatedAPIView):

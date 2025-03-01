@@ -44,11 +44,11 @@ class NutritionInfo(models.Model):
 
 
 # todo: remove model
-class Nutrition(models.Model):
-    created_at = models.DateTimeField(default=now, null=False)
-    nutrient = models.CharField(max_length=1000, default='', null=False)
-    food_name = models.CharField(max_length=100, null=False, default='')
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+# class Nutrition(models.Model):
+#     created_at = models.DateTimeField(default=now, null=False)
+#     nutrient = models.CharField(max_length=1000, default='', null=False)
+#     food_name = models.CharField(max_length=100, null=False, default='')
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
 # class FitnessRecommendation(models.Model):
