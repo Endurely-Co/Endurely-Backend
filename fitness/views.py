@@ -1,10 +1,10 @@
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.shortcuts import render
-from rest_framework.views import APIView
 
 from fitness.models import FitnessRecommendation, Recommendation, UserFitness
 from utils.api import api_success, api_created_success, api_error
+from utils.api_ext import AuthenticatedAPIView
 from utils.gemini import GeminiApi
 
 from fitness.serializers import FitnessRecommendationSerializer, RecommendationSerializer, UserFitnessSerializer
@@ -12,7 +12,7 @@ from fitness.serializers import FitnessRecommendationSerializer, RecommendationS
 
 # Create your views here.
 
-class FitnessGoals(APIView):
+class FitnessGoals(AuthenticatedAPIView):
     def get(self, _):
         goals = []
         for goal in UserFitness.FITNESS_GOALS:
@@ -22,8 +22,11 @@ class FitnessGoals(APIView):
             })
         return api_success(goals)
 
+    def post(self, request, *args, **kwargs):
+        pass
 
-class FitnessRecommendationView(APIView):
+
+class FitnessRecommendationView(AuthenticatedAPIView):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -52,19 +55,21 @@ class FitnessRecommendationView(APIView):
         try:
             user_fitness = None
             user = User.objects.get(pk=request_data.get('user'))
-            try:
-                user_fitness = UserFitness.objects.get(pk=request_data.get('user'))
-            except UserFitness.DoesNotExist as dne:
-                user_fitness = UserFitness(user=user,
-                                           height=request_data.get('height'),
-                                           sex=request_data.get('sex'),
-                                           fitness_goal=request_data.get('fitness_goal'), )
-                user_fitness.save()
+            user_fitness = UserFitness.objects.get(pk=request_data.get('user'))
+
+            # try:
+            #     user_fitness = UserFitness.objects.get(pk=request_data.get('user'))
+            # except UserFitness.DoesNotExist as dne:
+            #     user_fitness = UserFitness(user=user,
+            #                                height=request_data.get('height'),
+            #                                sex=request_data.get('sex'),
+            #                                fitness_goal=request_data.get('fitness_goal'), )
+            #     user_fitness.save()
 
             result_dict = self.gemini.fitness_recommendation(
-                height=request_data.get('height'),
-                sex=request_data.get('sex'),
-                fitness_goal=request_data.get('fitness_goal')
+                height=user_fitness.height,
+                sex=user_fitness.sex,
+                fitness_goal=user_fitness.fitness_goal
             )
             print(result_dict, type(result_dict))
 
@@ -86,3 +91,22 @@ class FitnessRecommendationView(APIView):
             return api_created_success(request_data)
         except IntegrityError as uno:
             return api_error("Oops! Something seems off with your input. Please check and enter a valid value")
+
+
+class FitnessUserView(AuthenticatedAPIView):
+
+    def post(self, request, *args, **kwargs):
+        request_data = request.data
+        user = User.objects.get(pk=request_data.get('user'))
+        user_fitness = UserFitness(user=user,
+                                   height=request_data.get('height'),
+                                   sex=request_data.get('sex'),
+                                   fitness_goal=request_data.get('fitness_goal'), )
+        user_fitness.save()
+
+    def get(self, _, user_id: int):
+        if type(user_id) is int:
+            user_fitness = UserFitness.objects.get(pk=user_id)
+            serializer = UserFitnessSerializer(user_fitness)
+            return api_success(serializer.data)
+        return api_error("Invalid user")

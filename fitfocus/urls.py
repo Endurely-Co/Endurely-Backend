@@ -24,5 +24,5 @@ urlpatterns = [
     path('onboarding/', include('onboarding.urls')),
     path('routines/', include('routines.urls')),
     path('fitness/', include('fitness.urls')),
-    path('mealplan/', include('mealplan.urls'))
+    path('meal/', include('meal.urls'))
 ]

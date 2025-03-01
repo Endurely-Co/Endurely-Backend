@@ -3,14 +3,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import permissions, status
 from utils.api import api_success, api_error, api_created_success
+from utils.api_ext import AuthenticatedAPIView
 from utils.gemini import GeminiApi
 
 from .models import Exercise, FitnessRoutine
 from .serializers import GetExercisesSerializer, FitnessRoutineSerializer, NutritionSerializer
-
-
-class AuthenticatedAPIView(APIView):
-    permission_classes = [permissions.AllowAny]  # Change to Authenticated later on
 
 
 # Create your views here.
