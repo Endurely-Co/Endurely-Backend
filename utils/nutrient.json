@@ -1,0 +1,57 @@
+{
+   "results": [
+      {
+         "item": "item_name",
+         "valid": true,
+         "nutrients": {
+            "macronutrients": [
+               {"name": "carbohydrates", "summary": "summary"},
+               {"name": "protein", "summary": "summary"},
+               {"name": "fats", "summary": "summary"}
+            ],
+            "vitamins": [
+               {"name": "vitamin_a", "summary": "summary"},
+               {"name": "vitamin_b", "summary": "summary"},
+               {"name": "vitamin_c", "summary": "summary"},
+               {"name": "etc", "summary": "summary"}
+            ],
+            "minerals": [
+               {"name": "calcium", "summary": "summary"},
+               {"name": "iron", "summary": "summary"},
+               {"name": "potassium", "summary": "summary"},
+               {"name": "etc", "summary": "summary"}
+            ],
+            "other_nutrients": "summary"
+         }
+      },
+      {
+         "item": "invalid_item_name",
+         "valid": false,
+         "error": "Invalid input: invalid_item_name is not a valid food/drink"
+      },
+      {
+         "item": "another_item_name",
+         "valid": true,
+         "nutrients": {
+            "macronutrients": [
+               {"name": "carbohydrates", "summary": "summary"},
+               {"name": "protein", "summary": "summary"},
+               {"name": "fats", "summary": "summary"}
+            ],
+            "vitamins": [
+               {"name": "vitamin_a", "summary": "summary"},
+               {"name": "vitamin_b", "summary": "summary"},
+               {"name": "vitamin_c", "summary": "summary"},
+               {"name": "etc", "summary": "summary"}
+            ],
+            "minerals": [
+               {"name": "calcium", "summary": "summary"},
+               {"name": "iron", "summary": "summary"},
+               {"name": "potassium", "summary": "summary"},
+               {"name": "etc", "summary": "summary"}
+            ],
+            "other_nutrients": "summary"
+         }
+      }
+   ]
+}

@@ -1,17 +1,16 @@
+import json
+import os
+
 from google import genai
 from google.genai.types import GenerateContentResponse
 
 from utils.secrets import Secrets
 
-
 class GeminiPrompts:
-    nutrient = "Analyze the following list of items: {item_list}. " \
-               "For each item that is a recognized food or beverage," \
-               " provide a summary of its key nutrients. For any item that" \
-               " is not a valid food or drink, respond with '@@Invalid input: {invalid_item}" \
-               " is not a valid food/drink@@'. Separate the analyses of each valid food with a blank line."
+    nutrient = """Analyze the following list of items: {item_list}. For each item, determine if
+     it is a recognized food or beverage. Respond with a JSON object with the following structure: {json}"""
 
-    fitness = """Generate three personalized fitness recommendations based on the following parameters:
+    fitness = """Generate three personalized fitness recommendations and format them using json based on the following parameters:
 
 * Height: {height}
 * Sex: {sex}
@@ -30,14 +29,16 @@ Then, instead of providing fitness recommendations, respond with the following:
 * If the fitness goal is invalid: "Invalid fitness goal input. Please provide a valid fitness objective."
 * If multiple parameters are invalid, please provide all relevant invalid parameter messages.
 
-If all parameters are valid, provide three distinct and safe fitness recommendations that align with the parameters. Each recommendation should include:
+If all parameters are valid, provide three distinct and safe fitness recommendations in the following JSON format:
 
-* A brief description of the exercise type.
-* Suggested frequency or duration.
-* A brief explanation of why the recommendation is suitable for the individual.
+{schema}
 
 Remember that these are only recommendations, and it is always best to consult a medical professional before starting any fitness program.
 """
+
+
+def ai_json(data):
+    return json.loads(json.dumps(json.loads(data.replace('```', '').strip('json')), indent=2))
 
 
 class GeminiApi:
@@ -50,13 +51,23 @@ class GeminiApi:
             model="gemini-2.0-flash", contents=contents
         )
 
+    def _schema(self, json_path: str):
+
+        with open(f'{os.getcwd()}/utils/{json_path}') as f:
+            d = json.load(f)
+            return json.dumps(d)
+
     def nutrients_from_food(self, food: str):
-        return self._using_model(GeminiPrompts.nutrient
-                                 .format(item_list=f"({food})", invalid_item="err:")).text
+        return ai_json(self._using_model(GeminiPrompts
+                                         .nutrient.format(item_list=f"({food})",
+                                                          json=self._schema('nutrient.json'))).text)
 
     def fitness_recommendation(self, height: float, sex: str, fitness_goal: str):
-        return self._using_model(GeminiPrompts
-                                 .fitness.format(height=height,
-                                                 sex=sex,
-                                                 fitness_goal=fitness_goal)).text
+        return ai_json(self._using_model(GeminiPrompts
+                                         .fitness.format(height=height,
+                                                         sex=sex,
+                                                         fitness_goal=fitness_goal,
+                                                         schema=self._schema('fitness_recomm.json'))) \
+                       .text)
 
+# print(GeminiApi().nutrients_from_food("rice"))

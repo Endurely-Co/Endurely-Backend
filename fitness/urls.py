@@ -17,12 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from fitness import views
 from onboarding import urls
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('onboarding/', include('onboarding.urls')),
-    path('routines/', include('routines.urls')),
-    path('fitness/', include('fitness.urls')),
-    path('mealplan/', include('mealplan.urls'))
+    path('goals', views.FitnessGoals.as_view(), name="fitness-goals"),
+    path('recommendations', views.FitnessRecommendationView.as_view(), name="fitness-recommendations"),
+    #FitnessRecommendationView
 ]

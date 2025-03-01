@@ -1,0 +1,23 @@
+{
+  "recommendations": [
+    {
+      "exercise": "Exercise Name",
+      "description": "Brief description of the exercise type.",
+      "frequency": "Suggested frequency or duration.",
+      "justification": "Brief explanation of why this recommendation is suitable for the individual."
+    },
+    {
+      "exercise": "Exercise Name",
+      "description": "Brief description of the exercise type.",
+      "frequency": "Suggested frequency or duration.",
+      "justification": "Brief explanation of why this recommendation is suitable for the individual."
+    },
+    {
+      "exercise": "Exercise Name",
+      "description": "Brief description of the exercise type.",
+      "frequency": "Suggested frequency or duration.",
+      "justification": "Brief explanation of why this recommendation is suitable for the individual."
+    }
+  ],
+  "disclaimer": "remember"
+}

@@ -1,14 +1,12 @@
-from django.db import transaction
 from django.http import Http404
-from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import permissions, viewsets, status
+from rest_framework import permissions, status
 from utils.api import api_success, api_error, api_created_success
-from .gemini import GeminiApi
+from utils.gemini import GeminiApi
 
 from .models import Exercise, FitnessRoutine
-from .serializers import GetExercisesSerializer, CategoriesSerializer, FitnessRoutineSerializer, NutritionSerializer
+from .serializers import GetExercisesSerializer, FitnessRoutineSerializer, NutritionSerializer
 
 
 class AuthenticatedAPIView(APIView):
