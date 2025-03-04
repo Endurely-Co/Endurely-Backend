@@ -25,12 +25,21 @@ class Exercise(models.Model):
         return f"{self.name} ({self.key})"
 
 
+class UserExercise(models.Model):
+    duration = DurationField(null=False, default=timedelta)
+    created_at = models.DateTimeField(default=now, null=False)
+    image = CharField(max_length=300, null=True)
+    completed = BooleanField(default=False, null=False)
+    exercise = models.ForeignKey(Exercise, default=1, on_delete=models.CASCADE)
+
+
 class FitnessRoutine(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    exercise = models.ForeignKey(Exercise, default=1, on_delete=models.CASCADE)
+    exercise = models.ForeignKey(UserExercise, default=1, on_delete=models.CASCADE)
     routine_name = CharField(max_length=50, null=False)
     routine_set = IntegerField(default=0, null=False)
     routine_reps = IntegerField(default=0, null=False)
+    routine_id = CharField(default='', null=False, max_length=40)
     routine_duration = DurationField(null=False, default=timedelta)
     completed = BooleanField(default=False, null=False)
     created_at = models.DateTimeField(default=now, null=False)

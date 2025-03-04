@@ -71,7 +71,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],
-        'APP_DIRS': False,
+        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -96,6 +96,7 @@ DATABASES = {
         'PASSWORD': 'fixMy40Comp$',
         'HOST': '34.123.107.179',
         'PORT': '5432',
+        'CONN_MAX_AGE': 600,  # 10 minutes
     }
 }
 

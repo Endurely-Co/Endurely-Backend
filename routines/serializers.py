@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from routines.models import Exercise, FitnessRoutine,NutritionInfo
+from routines.models import Exercise, FitnessRoutine, NutritionInfo, UserExercise
 
 
 class GetExercisesSerializer(serializers.ModelSerializer):
@@ -19,14 +19,16 @@ class FitnessRoutineSerializer(serializers.ModelSerializer):
     class Meta:
         model = FitnessRoutine
         fields = ["user", "exercise", "routine_name", "routine_set", "routine_reps",
-                  "routine_duration", "completed", "created_at"]
+                  "routine_duration", "completed", "created_at", "routine_id"]
+
+
+class UserExerciseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserExercise
+        exclude = ['created_at', 'image']
 
 
 class NutritionSerializer(serializers.ModelSerializer):
     class Meta:
         model = NutritionInfo
-        # fields = [
-        #     "created_at", "food_name", "user", "nutrient"
-        # ]
         exclude = ['created_at']
-
