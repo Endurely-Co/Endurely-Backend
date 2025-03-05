@@ -48,9 +48,10 @@ class GetCategories(AuthenticatedAPIView):
 
 class FitnessRoutineView(AuthenticatedAPIView):
 
-    def get_object(self, pk):
+    def get_object(self, pk, routine_id=None):
         try:
-            return FitnessRoutine.objects.filter(user=pk)
+            fitness_routine = FitnessRoutine.objects.filter(user=pk)
+            return fitness_routine.filter(routine_id=routine_id) if routine_id else fitness_routine
         except FitnessRoutine.DoesNotExist:
             raise Http404
 
@@ -96,16 +97,18 @@ class FitnessRoutineView(AuthenticatedAPIView):
 
         return api_created_success(request.data)
 
-    def get(self, _, pk=0):
+    def get(self, request, pk=0, ):
         print("id_id", pk)
+
+        routine_param = request.query_params.get('routine')
+        routine_id = routine_param if routine_param else None
 
         if pk <= 0:
             return api_error("invalid user id")
 
-        routines = self.get_object(pk)
+        routines = self.get_object(pk=pk, routine_id=routine_id)
 
         serializer_data = FitnessRoutineSerializer(routines, many=True).data
-        print('type:', type(serializer_data))
 
         in_response = {}
         distinct_exercises = {}
@@ -152,7 +155,8 @@ class FitnessRoutineView(AuthenticatedAPIView):
         return api_error(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        snippet = self.get_object(pk)
+        routine_param = request.query_params.get('routine')
+        snippet = self.get_object(pk, routine_param)
         snippet.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 

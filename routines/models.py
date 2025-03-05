@@ -17,8 +17,9 @@ class Exercise(models.Model):
         ('CM', 'Conditioning & Mobility'),
     ]
 
-    key = models.CharField(max_length=2, unique=True)
+    key = models.CharField(max_length=20, unique=True)
     name = models.CharField(max_length=50)  # name of an excercise
+    description = models.CharField(max_length=1000, null=False, default='')
     category = models.CharField(max_length=2, choices=CATEGORY_CHOICES)
 
     def __str__(self):
