@@ -1,5 +1,6 @@
 import uuid
 from datetime import timedelta
+from threading import Thread
 
 from django.db import transaction
 from django.http import Http404
@@ -98,10 +99,14 @@ class FitnessRoutineView(AuthenticatedAPIView):
         return api_created_success(request.data)
 
     def get(self, request, pk=0, ):
-        print("id_id", pk)
 
         routine_param = request.query_params.get('routine')
         routine_id = routine_param if routine_param else None
+
+        print("id_id", pk, type(routine_param) is not str)
+
+        if type(pk) is not int:
+            return api_error(f"{pk} not a valid type")
 
         if pk <= 0:
             return api_error("invalid user id")
@@ -132,7 +137,7 @@ class FitnessRoutineView(AuthenticatedAPIView):
             user_exercises_serializer['exercise'] = exercises_serializer[0]
 
             routine_id = serializer['routine_id']
-            print("attri", exercises_serializer)
+            # print("attri", exercises_serializer)
 
             if routine_id in distinct_exercises:
                 distinct_exercises[routine_id].append(user_exercises_serializer)
@@ -141,25 +146,74 @@ class FitnessRoutineView(AuthenticatedAPIView):
                 serializer['exercises'] = distinct_exercises[routine_id]
                 in_response[routine_id] = serializer
 
+            print("in_response", serializer)
             serializer.pop('exercise')
 
-        print("in_response", in_response)
+        # print("in_response", in_response)
         return api_success(in_response.values())
 
+    @transaction.atomic()
     def put(self, request, pk, format=None):
-        snippet = self.get_object(pk)
-        serializer = FitnessRoutineSerializer(snippet, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return api_success(serializer.data)
-        return api_error(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            exercise_list, existing_routine_data = [], {}
+
+            exercises = request.data['exercises']
+
+            # thread = Thread(target=)
+            # thread.start()
+            existing_routine = None
+            del_routine = FitnessRoutine.objects.filter(user=pk) \
+                .filter(routine_id=request.data['routine_id'])
+
+            if not del_routine.exists():
+                return api_error("Record does not exist")
+
+            mod_routine = del_routine[0]
+            del_routine.delete()
+
+            for exercise in exercises:
+                ex_key = exercise.get('user_exercise_id')
+                if ex_key:
+                    print("exercise", ex_key)
+                    exercise_obj = Exercise.objects.get(id=exercise['id'])
+                    hours, minutes, seconds = map(int, exercise['duration'].split(":"))
+                    user_exercise, created = UserExercise.objects.update_or_create(
+                        id=ex_key,  # The lookup field (determines existence)
+                        defaults={"duration": timedelta(minutes=minutes, seconds=seconds, hours=hours),
+                                  "exercise": exercise_obj, "completed": exercise["completed"]}  # Fields to update if found, or set if created
+                    )
+
+                    existing_routine = FitnessRoutine(user=mod_routine.user,
+                                                      routine_name=mod_routine.routine_name,
+                                                      routine_set=mod_routine.routine_set,
+                                                      routine_reps=mod_routine.routine_reps,
+                                                      routine_id=mod_routine.routine_id,
+                                                      routine_duration=mod_routine.routine_duration,
+                                                      completed=mod_routine.completed,
+                                                      exercise=user_exercise)
+                    existing_routine.save()
+                    print("existing_routine", existing_routine)
+                    exercise_list.append(UserExerciseSerializer(user_exercise).data)
+
+            existing_routine_data = FitnessRoutineSerializer(existing_routine).data
+            existing_routine_data['exercises'] = exercise_list
+            return api_success(existing_routine_data)
+        except (UserExercise.DoesNotExist, Exercise.DoesNotExist, KeyError) as e:
+            return api_error(f"{e}")
 
     def delete(self, request, pk):
         routine_param = request.query_params.get('routine')
+        if type(routine_param) is not str:
+            return api_error(f"{routine_param} not a valid type")
         snippet = self.get_object(pk, routine_param)
-        snippet.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
+        if len(snippet) <= 0:
+            return api_success(f"No routine matching this id: {routine_param}")
+        snippet.delete()
+        return api_success("Routine was deleted.")
+
+
+# 23cf0668153e4d18a4a4bc3ab0f7a0f9
 
 class NutritionView(AuthenticatedAPIView):
 
