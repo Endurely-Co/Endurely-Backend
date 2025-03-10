@@ -20,10 +20,12 @@ from meal import views
 
 urlpatterns = [
     path('plan', views.MealPlanView.as_view(), name="meal-goals"),
-    path('<int:user_id>', views.MealPlanView.as_view(), name="meal-goals"),
+    path('plan/<int:user_id>', views.MealPlanView.as_view(), name="meal-goals"),
     path('plan', views.MealPlanView.as_view(), name="meal-goals"),
     path('recommendations', views.MealRecommendationView.as_view(), name="meal-recommendations"),
     path('recommendations/new', views.MealRecommendationView.as_view(), name="meal-recommendations-add"),
+    path('nutrients', views.NutritionView.as_view(), name="nutrition-suggestions")
     #MealRecommendationView
+    # NutritionView
 
 ]

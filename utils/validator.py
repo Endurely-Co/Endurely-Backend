@@ -51,3 +51,6 @@ def check_password(password: str):
     else:
         raise WeakPasswordError
 
+
+def check_none(v1, v2):
+    return v1 if v1 else v2

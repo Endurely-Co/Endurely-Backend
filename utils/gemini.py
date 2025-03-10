@@ -6,6 +6,7 @@ from google.genai.types import GenerateContentResponse
 
 from utils.secrets import Secrets
 
+
 class GeminiPrompts:
     nutrient = """Analyze the following list of items: {item_list}. For each item, determine if
      it is a recognized food or beverage. Respond with a JSON object with the following structure: {json}"""
@@ -28,6 +29,8 @@ Then, instead of providing fitness recommendations, respond with the following:
 * If the sex is invalid: "Invalid sex input. Please provide a valid sex or gender identifier."
 * If the fitness goal is invalid: "Invalid fitness goal input. Please provide a valid fitness objective."
 * If multiple parameters are invalid, please provide all relevant invalid parameter messages.
+
+Also, limit every text to 250 characters.
 
 If all parameters are valid, provide three distinct and safe fitness recommendations in the following JSON format:
 
@@ -52,7 +55,7 @@ class GeminiApi:
         )
 
     def _schema(self, json_path: str):
-
+        # remove {os.getcwd()}/utils/ to test locally
         with open(f'{os.getcwd()}/utils/{json_path}') as f:
             d = json.load(f)
             return json.dumps(d)
@@ -70,4 +73,5 @@ class GeminiApi:
                                                          schema=self._schema('fitness_recomm.json'))) \
                        .text)
 
-# print(GeminiApi().nutrients_from_food("rice"))
+
+#print(GeminiApi().nutrients_from_food("rice"))

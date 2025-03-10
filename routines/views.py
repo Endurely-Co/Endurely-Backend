@@ -10,9 +10,10 @@ from rest_framework import permissions, status
 from utils.api import api_success, api_error, api_created_success
 from utils.api_ext import AuthenticatedAPIView
 from utils.gemini import GeminiApi
+from utils.validator import check_none
 
 from .models import Exercise, FitnessRoutine, UserExercise
-from .serializers import GetExercisesSerializer, FitnessRoutineSerializer, NutritionSerializer, UserExerciseSerializer
+from .serializers import GetExercisesSerializer, FitnessRoutineSerializer, UserExerciseSerializer
 
 
 # Create your views here.
@@ -180,16 +181,19 @@ class FitnessRoutineView(AuthenticatedAPIView):
                     user_exercise, created = UserExercise.objects.update_or_create(
                         id=ex_key,  # The lookup field (determines existence)
                         defaults={"duration": timedelta(minutes=minutes, seconds=seconds, hours=hours),
-                                  "exercise": exercise_obj, "completed": exercise["completed"]}  # Fields to update if found, or set if created
+                                  "exercise": exercise_obj, "completed": exercise["completed"]}
+                        # Fields to update if found, or set if created
                     )
 
+                    print("new_data", request.data.get("start_date"))
                     existing_routine = FitnessRoutine(user=mod_routine.user,
-                                                      routine_name=mod_routine.routine_name,
-                                                      routine_set=mod_routine.routine_set,
-                                                      routine_reps=mod_routine.routine_reps,
+                                                      routine_name=check_none(request.data.get('routine_name'),
+                                                                              mod_routine.routine_name),
                                                       routine_id=mod_routine.routine_id,
-                                                      routine_duration=mod_routine.routine_duration,
-                                                      completed=mod_routine.completed,
+                                                      completed=check_none(request.data.get('completed'),
+                                                                           mod_routine.completed),
+                                                      start_date=check_none(request.data.get("start_date"),
+                                                                            mod_routine.start_date),
                                                       exercise=user_exercise)
                     existing_routine.save()
                     print("existing_routine", existing_routine)
@@ -215,24 +219,3 @@ class FitnessRoutineView(AuthenticatedAPIView):
 
 # 23cf0668153e4d18a4a4bc3ab0f7a0f9
 
-class NutritionView(AuthenticatedAPIView):
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.gemini = GeminiApi()
-
-    def post(self, request):
-        food = request.data.get('food_name')
-        if food and len(food) > 2:
-            response = request.data
-            response["nutrient"] = self.gemini.nutrients_from_food(food)
-            serializer = NutritionSerializer(data=response)
-
-            if serializer.is_valid():
-                print('nutrient', response)
-                serializer.save()
-                return api_success(response)
-            else:
-                return api_error("Sorry, you can't use this service at the moment.")
-        else:
-            return api_error("Food/drink is invalid. Try again!")

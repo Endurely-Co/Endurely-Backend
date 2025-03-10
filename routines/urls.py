@@ -8,6 +8,6 @@ urlpatterns = [
     #path("update/<int:pk>", views.FitnessRoutineView.as_view(), name="fitness-routine-update"),
     path("user/<int:pk>", views.FitnessRoutineView.as_view(), name="fitness-routine-all"),
     path("<int:pk>", views.FitnessRoutineView.as_view(), name="fitness-routine-remove"),
-    path("food/nutrients", views.NutritionView.as_view(), name="food-nutrients"),
+    #path("nutrients", views.NutritionView.as_view(), name="food-nutrients"),
     path("exercises/category/<str:category>", views.GetExercisesByCategory.as_view(), name="get-exercises-by category")
 ]

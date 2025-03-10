@@ -35,22 +35,31 @@ class UserExercise(models.Model):
 
 
 class FitnessRoutine(models.Model):
+
+    WEEK_DAYS = [
+        ('mon', 'Monday'),
+        ('tue', 'Tuesday'),
+        ('wed', 'Wednesday'),
+        ('thu', 'Thursday'),
+        ('fri', 'Friday'),
+        ('sat', 'Saturday'),
+        ('sun', 'Sunday'),
+    ]
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     exercise = models.ForeignKey(UserExercise, default=1, on_delete=models.CASCADE)
     routine_name = CharField(max_length=50, null=False)
-    routine_set = IntegerField(default=0, null=False)
-    routine_reps = IntegerField(default=0, null=False)
     routine_id = CharField(default='', null=False, max_length=40)
-    routine_duration = DurationField(null=False, default=timedelta)
     completed = BooleanField(default=False, null=False)
     created_at = models.DateTimeField(default=now, null=False)
+    start_date = models.DateTimeField(null=False, default=now)
+    #day = models.CharField(max_length=10, choices=WEEK_DAYS, default=WEEK_DAYS[0][0])
+
+    # routine_set = IntegerField(default=0, null=False)
+    # routine_reps = IntegerField(default=0, null=False)
+    # routine_duration = DurationField(null=False, default=timedelta)
 
 
-class NutritionInfo(models.Model):
-    created_at = models.DateTimeField(default=now, null=False)
-    nutrient = models.CharField(max_length=1000, default='', null=False)
-    food_name = models.CharField(max_length=100, null=False, default='')
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
 # todo: remove model
