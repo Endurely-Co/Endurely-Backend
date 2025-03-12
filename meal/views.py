@@ -49,6 +49,14 @@ class MealPlanView(AuthenticatedAPIView):
             # print("food_item", )
         return api_success(meal_plan_data)
 
+    def delete(self, request, user_id):
+        meal_to_delete = request.query_params.get('plan_id')
+        if meal_to_delete:
+            meal_plan = MealPlan.objects.filter(user=user_id) \
+                .filter(meal_plan_id=meal_to_delete)
+            return api_success("Meal plan successfully deleted")
+        return api_error("plan_id is required")
+
     # meal, calorie rm -rf mealplan/migrations
     @transaction.atomic()
     def post(self, request, *args, **kwargs):
@@ -72,11 +80,8 @@ class MealPlanView(AuthenticatedAPIView):
 
             meal_plan = MealPlan.objects.filter(meal_plan_id=plan['food_item_id'])
             if not meal_plan.exists():
-                print("id", "____", food_item)
-
                 meal_plan = update_or_create_meal_plan(plan_id,
                                                        user, request.data['meal_date_time'], food_item)
-                print("id", "____>", meal_plan)
 
         return api_created_success({"message": "Meal plan added successfully"})
 
