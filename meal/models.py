@@ -36,6 +36,8 @@ class MealPlan(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
     food_item = models.ForeignKey(FoodItem, on_delete=models.CASCADE, null=True)
     food_name = models.CharField(null=True, blank=True, max_length=100, default="")
+    meal_plan_id = models.CharField(null=True, blank=True, max_length=50, default="")
+    meal_date_time = models.DateTimeField(default=now, null=False)
 
 
 class MealRecommendation(models.Model):
@@ -45,7 +47,7 @@ class MealRecommendation(models.Model):
 
 class Nutrient(models.Model):
     name = models.CharField(max_length=255, default="")
-    summary = models.CharField( max_length=250, default="", null=True)
+    summary = models.CharField(max_length=250, default="", null=True)
 
     def __str__(self):
         return self.name

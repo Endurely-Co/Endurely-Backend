@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.utils.timezone import now
@@ -6,6 +8,7 @@ from meal.models import MealPlan, MealInfo, NutritionInfo, FoodItem
 from meal.serializers import MealPlanSerializer, MealInfoSerializer, NutritionSerializer, FoodItemSerializer
 from utils.api import api_created_success, api_error, api_success
 from utils.api_ext import AuthenticatedAPIView
+from utils.fitmodels import update_or_create_meal_plan
 from utils.gemini import GeminiApi
 
 
@@ -31,68 +34,75 @@ class MealRecommendationView(AuthenticatedAPIView):
 class MealPlanView(AuthenticatedAPIView):
 
     def get(self, request, user_id):
+        meal_plan_id = request.query_params.get('plan_id')
         meal_plan = MealPlan.objects.filter(user=user_id)
-        response = []
-        # response = MealPlanSerializer(meal_plan, many=True).data
-        for plan in meal_plan:
-            response.append({"created_at": plan.created_at,
-                             "id": plan.id,
-                             "meal": MealInfoSerializer(plan.meal).data,
-                             "nutrient": NutritionSerializer(plan.nutrient).data
-                             })
-        return api_success(response)
+        if meal_plan_id:
+            meal_plan = meal_plan.filter(meal_plan_id=meal_plan_id)
+        meal_plan_data = MealPlanSerializer(meal_plan, many=True).data
+        print("meal_plan", meal_plan)
+        for i in range(len(meal_plan)):
+            serialized_food = FoodItemSerializer(meal_plan[i].food_item).data
+            if meal_plan_id:
+                meal_plan_data[i]["nutrients"] = serialized_food
+            else:
+                meal_plan_data[i]['other_nutrients'] = serialized_food['other_nutrients']
+            # print("food_item", )
+        return api_success(meal_plan_data)
 
     # meal, calorie rm -rf mealplan/migrations
     @transaction.atomic()
     def post(self, request, *args, **kwargs):
-        nutrient = None
-        try:
-            user = User.objects.get_by_natural_key(request.data['username'])
+        meal_plans = request.data.get('meal_plans')
+        if not meal_plans:
+            return api_error("meal_plans is absent")
 
-            nutrient_data = request.data.get('nutrients')
+        if type(meal_plans) is not list:
+            return api_error("meal_plans is not valid. Expected: list of meal plans")
 
-            if type(nutrient_data) is list:
-                nutrients = []
-                db_result, meal_info = {}, None
-                for nutrition in nutrient_data:
-                    meal_info = MealInfo(meal=request.data['meal'],
-                                         calorie=request.data['calorie'],
-                                         created_at=now())
-                    nutrient = NutritionInfo(created_at=now(), nutrient=nutrition,
-                                             food_name=request.data['meal'],
-                                             user=user)
-                    nutrient.save()
-                    meal_info.save()
-                    meal_plan = MealPlan(created_at=now(), user=user,
-                                         meal=meal_info,
-                                         nutrient=nutrient)
-                    meal_plan.save()
-                    nutrients.append({
-                        "name": nutrition,
-                        "'id": nutrient.id
-                    })
-                db_result = MealInfoSerializer(meal_info).data
-                db_result['nutrients'] = nutrients
-                return api_created_success(db_result)
-            else:
-                raise KeyError(f"nutrients type of list was expected but {type(nutrient_data)} is giving")
-        except KeyError as kerr:
-            return api_error(f"{str(kerr)} is missing")
-        except User.DoesNotExist as dne:
-            return api_error(str(dne))
+        if len(meal_plans) > 4:
+            return api_error("meal_plans too many meal plans")
+        plan_id = "".join(sorted([str(mp['food_item_id']) for mp in meal_plans]))
+        user = User.objects.get(pk=request.data['user'])
+        meal_plan_response, meal_plan_id = [], None
+        for plan in meal_plans:
+            try:
+                food_item = FoodItem.objects.get(pk=plan['food_item_id'])
+            except FoodItem.DoesNotExist:
+                return api_error("food item doesn't exist")
+
+            meal_plan = MealPlan.objects.filter(meal_plan_id=plan['food_item_id'])
+            if not meal_plan.exists():
+                print("id", "____", food_item)
+
+                meal_plan = update_or_create_meal_plan(plan_id,
+                                                       user, request.data['meal_date_time'], food_item)
+                print("id", "____>", meal_plan)
+
+        return api_created_success({"message": "Meal plan added successfully"})
 
 
-class NutritionView(AuthenticatedAPIView):
+class NutrientView(AuthenticatedAPIView):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.gemini = GeminiApi()
 
-    from django.db import transaction
+    def get(self, request, user_id):
+        meal_plan = MealPlan.objects.filter(user=user_id)
+        meal_plan_data = MealPlanSerializer(meal_plan, many=True).data
+        for i in range(len(meal_plan)):
+            serialized_food = FoodItemSerializer(meal_plan[i].food_item).data
+            meal_plan_data[i]['other_nutrients'] = serialized_food['other_nutrients']
+            # meal_plan_data[i]["nutrients"] = serialized_food
+            # print("food_item", )
+        return api_success(meal_plan_data)
 
     @transaction.atomic
     def post(self, request):
-        foods = request.data.get('food_name').lower().strip()
+        if not request.data.get('meal') or not request.data.get('user'):
+            return api_error("user and meal are required")
+
+        foods = request.data.get('meal').lower().strip()
 
         # Validate input size
         if not foods or len(foods) <= 2:
@@ -158,12 +168,5 @@ class NutritionView(AuthenticatedAPIView):
             # We have one existing food in the db
             created_foods.extend(food_item_query)
 
-        for food_item in created_foods:
-            MealPlan.objects.update_or_create(
-                id=food_item.id,
-                user=user,
-                food_item=food_item,
-                food_name=food_item.item
-            )
         response_obj["nutrients"] = FoodItemSerializer(created_foods, many=True).data
         return api_created_success(response_obj)
