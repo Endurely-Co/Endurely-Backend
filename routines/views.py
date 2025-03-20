@@ -1,6 +1,6 @@
-import uuid
 from datetime import timedelta
 from threading import Thread
+import uuid
 
 from django.db import transaction
 from django.http import Http404
@@ -174,30 +174,35 @@ class FitnessRoutineView(AuthenticatedAPIView):
 
             for exercise in exercises:
                 ex_key = exercise.get('user_exercise_id')
-                if ex_key:
-                    print("exercise", ex_key)
-                    exercise_obj = Exercise.objects.get(id=exercise['id'])
-                    hours, minutes, seconds = map(int, exercise['duration'].split(":"))
-                    user_exercise, created = UserExercise.objects.update_or_create(
-                        id=ex_key,  # The lookup field (determines existence)
-                        defaults={"duration": timedelta(minutes=minutes, seconds=seconds, hours=hours),
-                                  "exercise": exercise_obj, "completed": exercise["completed"]}
-                        # Fields to update if found, or set if created
-                    )
+                # if ex_key:
+                print("exercise", ex_key)
+                exercise_obj = Exercise.objects.get(id=exercise['id'])
+                hours, minutes, seconds = map(int, exercise['duration'].split(":"))
+                user_exercise, created = UserExercise.objects.update_or_create(
+                    id=exercise.get('user_exercise_id'),  # The lookup field (determines existence)
+                    defaults={"duration": timedelta(minutes=minutes, seconds=seconds, hours=hours),
+                              "exercise": exercise_obj, "completed": exercise["completed"]}
+                    # Fields to update if found, or set if created
+                )
 
-                    print("new_data", request.data.get("start_date"))
-                    existing_routine = FitnessRoutine(user=mod_routine.user,
-                                                      routine_name=check_none(request.data.get('routine_name'),
-                                                                              mod_routine.routine_name),
-                                                      routine_id=mod_routine.routine_id,
-                                                      completed=check_none(request.data.get('completed'),
-                                                                           mod_routine.completed),
-                                                      start_date=check_none(request.data.get("start_date"),
-                                                                            mod_routine.start_date),
-                                                      exercise=user_exercise)
-                    existing_routine.save()
-                    print("existing_routine", existing_routine)
-                    exercise_list.append(UserExerciseSerializer(user_exercise).data)
+                print("user_exercise", user_exercise)
+
+                print("new_data", request.data.get("start_date"))
+                existing_routine, created = FitnessRoutine.objects.update_or_create(
+                    user=mod_routine.user,
+                    exercise=user_exercise,
+                    # check_none(request.data.get("start_date"), mod_routine.start_date),
+                    defaults={
+                        "start_date": request.data.get("meal_date_time"),
+                        "routine_name": check_none(request.data.get("routine_name"), mod_routine.routine_name),
+                        "routine_id": mod_routine.routine_id,
+                        "completed": check_none(request.data.get("completed"), mod_routine.completed),
+                        #"exercise": user_exercise,
+                    }
+                )
+
+                print("existing_routine", existing_routine)
+                exercise_list.append(UserExerciseSerializer(user_exercise).data)
 
             existing_routine_data = FitnessRoutineSerializer(existing_routine).data
             existing_routine_data['exercises'] = exercise_list
@@ -216,6 +221,4 @@ class FitnessRoutineView(AuthenticatedAPIView):
         snippet.delete()
         return api_success("Routine was deleted.")
 
-
 # 23cf0668153e4d18a4a4bc3ab0f7a0f9
-
