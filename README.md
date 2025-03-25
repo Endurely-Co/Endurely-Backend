@@ -23,7 +23,7 @@ We welcome contributions from the community. However, to maintain a consistent a
 ### Available APIs
 #### Sign up API
 - Endpoint: 
-`http://127.0.0.1:8000/onboarding/create-user/`
+`http://127.0.0.1:8000/onboarding/create-account`
 - Success response (Sample):
 ```json
 {
