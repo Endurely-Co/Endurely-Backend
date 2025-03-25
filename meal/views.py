@@ -14,6 +14,7 @@ from utils.gemini import GeminiApi
 
 # Create your views here.
 
+# deprecated
 class MealRecommendationView(AuthenticatedAPIView):
 
     def get(self, _):
@@ -109,7 +110,6 @@ class NutrientView(AuthenticatedAPIView):
 
         foods = request.data.get('meal').lower().strip()
 
-        # Validate input size
         if not foods or len(foods) <= 2:
             return api_error("Food/drink is invalid. Try again!")
 
@@ -117,8 +117,6 @@ class NutrientView(AuthenticatedAPIView):
 
         if len(food_items) > 2:
             return api_error("Maximum of two food/drink is allowed!")
-
-        # Get user
 
         try:
             user = User.objects.get(pk=request.data.get('user'))
@@ -133,12 +131,10 @@ class NutrientView(AuthenticatedAPIView):
             else FoodItem.objects.filter(item__in=[food_items[0], food_items[1]])
         food_exist = food_item_query.exists()
         if food_exist:
-            # Both provided foods exists in our db, so no ai call
             if len(food_item_query) >= len(food_items):
                 response_obj["nutrients"] = FoodItemSerializer(food_item_query, many=True).data
                 return api_created_success(response_obj)
-            else:  # absent_q_food
-                # Only one food exist in the db
+            else:
                 for food in food_items:
                     if food not in [f.item for f in food_item_query]:
                         foods = food
@@ -147,13 +143,12 @@ class NutrientView(AuthenticatedAPIView):
         # Get results from gemini API
         gemini_results = self.gemini.nutrients_from_food(foods)['results']
 
-        # Prepare food objects for bulk insertion
         food_objects = []
         response_list = []
 
         for result in gemini_results:
             if result.get('error'):
-                return api_error(result['error'])  # Consider collecting all errors and returning them together
+                return api_error(result['error'])
 
             nutrients = result['nutrients']
             food_obj = FoodItem(

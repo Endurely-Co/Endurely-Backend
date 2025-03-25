@@ -55,7 +55,7 @@ class GeminiApi:
         )
 
     def _schema(self, json_path: str):
-        # remove {os.getcwd()}/utils/ to test locally
+        # remove {os.getcwd()}/utils/ to tests locally
         with open(f'{os.getcwd()}/utils/{json_path}') as f:
             d = json.load(f)
             return json.dumps(d)
