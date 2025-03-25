@@ -1,8 +1,10 @@
+from deprecated.classic import deprecated
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 
 
+@deprecated(reason='otp is no longer need')
 # Create your models here.
 class OTP(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
