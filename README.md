@@ -27,12 +27,11 @@ We welcome contributions from the community. However, to maintain a consistent a
 - Success response (Sample):
 ```json
 {
-    "data": {
-        "username": "dev017",
+      "username": "dev017",
         "first_name": "Gbenga",
         "last_name": "Dev",
-        "email": "test06@myport.ac.uk"
-    }
+        "email": "test06@myport.ac.uk",
+        "password": "abc123@"
 }
 ```
 - Error Response (Sample):
@@ -42,7 +41,6 @@ We welcome contributions from the community. However, to maintain a consistent a
     "message": "'first_name' is missing"
 }
 ```
-<<<<<<< HEAD
 
 #### Login API
 - Endpoint:
