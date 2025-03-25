@@ -179,7 +179,6 @@ We welcome contributions from the community. However, to maintain a consistent a
     "message": "No OTP was provided."
 }
 ```
-||||||| 978e2ec
 
 #### Login API
 - Endpoint:
