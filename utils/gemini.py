@@ -4,7 +4,7 @@ import os
 from google import genai
 from google.genai.types import GenerateContentResponse
 
-from platform import is_github
+from platformi import is_github
 
 if is_github():
     from utils.secrets import Secrets as SecretEnv
