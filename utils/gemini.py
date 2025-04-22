@@ -4,7 +4,12 @@ import os
 from google import genai
 from google.genai.types import GenerateContentResponse
 
-from utils.secrets import Secrets
+from platform import is_github
+
+if is_github():
+    from utils.secrets import Secrets as SecretEnv
+else:
+    from utils.gh_secrets import GHSecrets as SecretEnv
 
 
 class GeminiPrompts:
@@ -47,7 +52,7 @@ def ai_json(data):
 class GeminiApi:
 
     def __init__(self):
-        self.client = genai.Client(api_key=Secrets.GEMINI_KEY)
+        self.client = genai.Client(api_key=SecretEnv.GEMINI_KEY)
 
     def _using_model(self, contents: str):
         return self.client.models.generate_content(
@@ -73,5 +78,4 @@ class GeminiApi:
                                                          schema=self._schema('fitness_recomm.json'))) \
                        .text)
 
-
-#print(GeminiApi().nutrients_from_food("rice"))
+# print(GeminiApi().nutrients_from_food("rice"))
