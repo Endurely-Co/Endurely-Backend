@@ -23,7 +23,6 @@ class FitnessGoals(AuthenticatedAPIView):
         return api_success(goals)
 
 
-
 class FitnessRecommendationView(AuthenticatedAPIView):
 
     def __init__(self, **kwargs):
