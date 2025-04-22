@@ -23,8 +23,8 @@ jobs:
         DB_USERNAME: $DB_USERNAME
         DB_HOST: $DB_HOST
         GEMINI_KEY: ${{ env.GEMINI_KEY }}
-      run:
-        | echo "Super secret is: $DB_NAME"
+      run: |
+        echo "Super secret is: $DB_NAME"
     - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
