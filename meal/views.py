@@ -18,9 +18,12 @@ from utils.gemini import GeminiApi
 class MealRecommendationView(AuthenticatedAPIView):
 
     def get(self, _):
-        meal_data = MealInfo.objects.all()
-        serializer = MealInfoSerializer(meal_data, many=True)
-        return api_created_success(serializer.data)
+        try:
+            meal_data = MealInfo.objects.all()
+            serializer = MealInfoSerializer(meal_data, many=True)
+            return api_success(serializer.data)
+        except Exception as err:
+            return api_error('Invalid server error')
 
     def post(self, request, *args, **kwargs):
         serializers = MealInfoSerializer(data=request.data)
