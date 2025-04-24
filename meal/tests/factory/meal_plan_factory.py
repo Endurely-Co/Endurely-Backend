@@ -27,6 +27,8 @@ class MealPlanFactory:
         return self.view(request)
 
 
+    def tear_down(self):
+        self.factory = None
 
     # def _build_recommendation_factory_get():
     #     factory = APIRequestFactory()

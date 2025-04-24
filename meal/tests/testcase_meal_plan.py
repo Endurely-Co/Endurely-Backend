@@ -1,7 +1,6 @@
 import unittest
-from unittest.mock import patch, MagicMock, call
+from unittest.mock import patch, MagicMock
 
-from meal.models import MealPlan
 from meal.tests.factory.meal_plan_factory import MealPlanFactory
 
 
@@ -36,3 +35,6 @@ class MealPlanViewTestCase(unittest.TestCase):
     def test_post_meal_plan(self):
         pass
 
+
+    def doCleanups(self):
+        self.factory.tear_down()
