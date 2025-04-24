@@ -1,11 +1,8 @@
-import uuid
-
 from django.contrib.auth.models import User
 from django.db import transaction
-from django.utils.timezone import now
 
-from meal.models import MealPlan, MealInfo, NutritionInfo, FoodItem
-from meal.serializers import MealPlanSerializer, MealInfoSerializer, NutritionSerializer, FoodItemSerializer
+from meal.models import MealPlan, MealInfo, FoodItem
+from meal.serializers import MealPlanSerializer, MealInfoSerializer, FoodItemSerializer
 from utils.api import api_created_success, api_error, api_success
 from utils.api_ext import AuthenticatedAPIView
 from utils.fitmodels import update_or_create_meal_plan
@@ -41,10 +38,10 @@ class MealPlanView(AuthenticatedAPIView):
     def get(self, request, user_id):
         meal_plan_id = request.query_params.get('plan_id')
         meal_plan = MealPlan.objects.filter(user=user_id)
+        print('calledddd', meal_plan)
         if meal_plan_id:
             meal_plan = meal_plan.filter(meal_plan_id=meal_plan_id)
         meal_plan_data = MealPlanSerializer(meal_plan, many=True).data
-        print("meal_plan", meal_plan)
         for i in range(len(meal_plan)):
             serialized_food = FoodItemSerializer(meal_plan[i].food_item).data
             if meal_plan_id:
@@ -57,8 +54,7 @@ class MealPlanView(AuthenticatedAPIView):
     def delete(self, request, user_id):
         meal_to_delete = request.query_params.get('plan_id')
         if meal_to_delete:
-            meal_plan = MealPlan.objects.filter(user=user_id) \
-                .filter(meal_plan_id=meal_to_delete)
+            MealPlan.objects.filter(user=user_id).filter(meal_plan_id=meal_to_delete)
             return api_success("Meal plan successfully deleted")
         return api_error("plan_id is required")
 
@@ -76,7 +72,6 @@ class MealPlanView(AuthenticatedAPIView):
             return api_error("meal_plans too many meal plans")
         plan_id = "".join(sorted([str(mp['food_item_id']) for mp in meal_plans]))
         user = User.objects.get(pk=request.data['user'])
-        meal_plan_response, meal_plan_id = [], None
         for plan in meal_plans:
             try:
                 food_item = FoodItem.objects.get(pk=plan['food_item_id'])

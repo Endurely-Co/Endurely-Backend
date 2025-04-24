@@ -1,15 +1,12 @@
 import unittest
-from datetime import datetime
 from unittest.mock import patch, MagicMock
 
 from rest_framework.response import Response
-from rest_framework.test import APIRequestFactory, APITestCase
+from rest_framework.test import APIRequestFactory
 
 from meal.serializers import MealInfoSerializer, required
 from meal.views import MealRecommendationView
-import pytest
-
-from utils.api import api_success, api_created_success, api_error
+from utils.api import api_created_success, api_error
 from utils.validator import Status
 
 
