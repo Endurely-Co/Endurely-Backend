@@ -4,21 +4,80 @@ from unittest.mock import patch, MagicMock
 
 from rest_framework.response import Response
 from rest_framework.test import APIRequestFactory, APITestCase
+
+from meal.serializers import MealInfoSerializer, required
 from meal.views import MealRecommendationView
 import pytest
 
-from utils.api import api_success
+from utils.api import api_success, api_created_success, api_error
 from utils.validator import Status
 
 
-def create_recommendation_factory():
+def _build_recommendation_factory_get():
     factory = APIRequestFactory()
     request = factory.get("/recommendations")
     view = MealRecommendationView.as_view()
     return view(request)
 
 
+def _build_recommendation_factory_post(mock_request):
+    factory = APIRequestFactory()
+    request = factory.post('/recommendations/new', data=mock_request)
+    view = MealRecommendationView.as_view()
+    return view(request)
+
+
+class FakeMealInfoSerializer(MealInfoSerializer):
+    class Meta(MealInfoSerializer.Meta):
+        fields = '__all__'
+        extra_kwargs = {'meal': required, 'calorie': required}
+
+
 class MealRecommendationTestCase(unittest.TestCase):
+
+    @patch('meal.views.api_created_success')
+    @patch('meal.views.MealInfoSerializer')
+    def test_post_meal_plan_success(self, mock_serializer_class, mock_api_created):
+        mock_request = {
+            'meal': 'Eba and Egusi',
+            'calorie': 2.4
+        }
+
+        mock_serializer = MagicMock()
+        mock_serializer.is_valid.return_value = True
+        mock_serializer_class.return_value = mock_serializer
+        mock_serializer_class.save.return_value = None
+        mock_response = {
+            "id": 68,
+            "meal": "Rice",
+            "calorie": 21.2,
+            "created_at": "2025-04-24T18:38:54.732192Z"
+        }
+        mock_serializer_class.data = mock_response
+
+        # 'recommendations/new'
+        mock_api_created.return_value = api_created_success(mock_serializer_class.data)
+
+        response = _build_recommendation_factory_post(mock_request)
+
+        self.assertEqual(response.data, {'data': mock_response})
+        self.assertEqual(response.status_code, 201)
+        mock_api_created.assert_called()
+
+    @patch('meal.views.api_error')
+    @patch('meal.views.MealInfoSerializer')
+    def test_post_meal_plan_error(self, mock_serializer_class, mock_api_error):
+        mock_request = {
+            'meal': 'Eba and Egusi',
+        }
+
+        # Test bad request
+        mock_api_error.return_value = api_error('Bad request')
+        mock_serializer_class.return_value = FakeMealInfoSerializer(data=mock_request)
+        response = _build_recommendation_factory_post(mock_request)
+        print('meal_info_serializer', response)
+        # check that api_error is called
+        mock_api_error.assert_called()
 
     @patch('meal.views.api_error')
     @patch('meal.views.MealInfo')
@@ -32,9 +91,7 @@ class MealRecommendationTestCase(unittest.TestCase):
             'code': Status.INVALID_REQUEST,
             'message': expected_err_msg
         })
-
-        response = create_recommendation_factory()
-
+        _build_recommendation_factory_get()
         mock_api_error.assert_called_once_with(expected_err_msg)
 
     @patch("meal.views.api_success")
@@ -59,7 +116,7 @@ class MealRecommendationTestCase(unittest.TestCase):
 
         mock_api_success.return_value = Response(data={"data": expected_data}, status=200)
 
-        response = create_recommendation_factory()
+        response = _build_recommendation_factory_get()
         mock_api_success.assert_called_once_with(expected_data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, {"data": expected_data})

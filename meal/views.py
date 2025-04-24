@@ -27,6 +27,7 @@ class MealRecommendationView(AuthenticatedAPIView):
 
     def post(self, request, *args, **kwargs):
         serializers = MealInfoSerializer(data=request.data)
+
         if serializers.is_valid():
             serializers.save()
             return api_created_success(serializers.data)
