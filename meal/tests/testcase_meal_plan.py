@@ -162,7 +162,7 @@ class MealPlanViewTestCase(unittest.TestCase):
                                                            mock_fi_objs.get.return_value)
         mock_transaction.atomic.assert_called()
         mock_api_created_success.assert_called_with(success_res)
-        self.assertEqual(response.status_code, Status.CREATED_SUCCESS)
+        self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'data': success_res})
 
 
@@ -199,7 +199,7 @@ class MealPlanViewTestCase(unittest.TestCase):
 
         mock_transaction.atomic.assert_called()
         mock_api_created_success.assert_called_with(success_res)
-        self.assertEqual(response.status_code, Status.CREATED_SUCCESS)
+        self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'data': success_res})
         self.assertTrue(mock_meal_plan.exists())
 
