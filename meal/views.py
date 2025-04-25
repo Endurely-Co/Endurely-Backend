@@ -71,8 +71,6 @@ class MealPlanView(AuthenticatedAPIView):
             return api_error("meal_plans too many meal plans")
         plan_id = "".join(sorted([str(mp['food_item_id']) for mp in meal_plans]))
 
-        print('meal_plans ----------->',request.data['user'])
-
         try:
             user = User.objects.get(pk=request.data['user'])
         except User.DoesNotExist:
@@ -110,7 +108,6 @@ class NutrientView(AuthenticatedAPIView):
 
 
     def post(self, request):
-        print('request ----->', request.data)
         if not request.data.get('meal') or not request.data.get('user'):
             return api_error("user and meal are required")
 

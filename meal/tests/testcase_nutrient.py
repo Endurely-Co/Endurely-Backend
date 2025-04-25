@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 from django.contrib.auth.models import User
 from meal.tests.factory.nutrient_factory import NutrientFactory
-from utils.api import api_success, api_error
+from utils.api import api_success, api_error, api_created_success
 
 
 class TestCaseNutrient(unittest.TestCase):
@@ -10,12 +10,64 @@ class TestCaseNutrient(unittest.TestCase):
     def setUp(self):
         self.factory = NutrientFactory()
 
-
+    @patch('meal.views.api_created_success')
+    @patch('meal.views.FoodItem.objects')
+    @patch('meal.views.transaction')
     @patch('meal.views.User.objects')
     @patch('meal.views.GeminiApi')
-    @patch('meal.views.api_error')
-    def test_add_nutrient_invalid_user(self, mock_api_error, _, mock_user_objs):
-        pass
+    def test_add_nutrient_food_not_in_db(self, mock_gemini, mock_user_objs, mock_transaction,
+                                             mock_food_item_objs, mock_api_created_success):
+        mock_transaction.atomic.return_value = MagicMock()
+        mock_request = MagicMock()
+        mock_user = MagicMock()
+        mock_user.id = 2
+        mock_user_objs.get.return_value = mock_user
+        mock_request.data = {
+            'meal': 'Eba, egusi',
+            'user': 2,
+        }
+        fake_response = {
+            "user": mock_user.id,
+            'nutrients': []
+        }
+
+        mock_food_item_objs.filter.return_value = MagicMock()
+        mock_food_item_objs.exists.return_value = False
+        mock_api_created_success.return_value = api_created_success(fake_response)
+        response = self.factory.add_nutrients(mock_request.data)
+        mock_api_created_success.assert_called_with(fake_response)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, {'data': fake_response})
+
+
+    @patch('meal.views.api_created_success')
+    @patch('meal.views.FoodItem.objects')
+    @patch('meal.views.transaction')
+    @patch('meal.views.User.objects')
+    @patch('meal.views.GeminiApi')
+    def test_add_nutrient_food_already_in_db(self, _, mock_user_objs, mock_transaction,
+                                             mock_food_item_objs, mock_api_created_success):
+        mock_transaction.atomic.return_value = MagicMock()
+        mock_request = MagicMock()
+        mock_user = MagicMock()
+        mock_user.id = 2
+        mock_user_objs.get.return_value = mock_user
+        mock_request.data = {
+            'meal': 'Eba, egusi',
+            'user': 2,
+        }
+        fake_response = {
+                "user": mock_user.id,
+            'nutrients': []
+            }
+
+        mock_food_item_objs.filter.return_value = MagicMock()
+        mock_food_item_objs.exists.return_value = True
+        mock_api_created_success.return_value = api_created_success(fake_response)
+        response = self.factory.add_nutrients(mock_request.data)
+        mock_api_created_success.assert_called_with(fake_response)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, {'data': fake_response})
 
     @patch('meal.views.User.objects')
     @patch('meal.views.GeminiApi')
