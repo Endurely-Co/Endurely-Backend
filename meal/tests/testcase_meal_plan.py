@@ -10,11 +10,6 @@ from utils.api import api_success, api_error, api_created_success
 from utils.validator import Status
 
 
-class FakeUser(AbstractUser):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.set_password('<PASSWORD>')
-
 
 class MealPlanViewTestCase(unittest.TestCase):
 

@@ -59,7 +59,6 @@ class MealPlanView(AuthenticatedAPIView):
         return api_error("plan_id is required")
 
     # meal, calorie rm -rf mealplan/migrations
-    @transaction.atomic()
     def post(self, request, *args, **kwargs):
         meal_plans = request.data.get('meal_plans')
         if not meal_plans:
@@ -71,17 +70,24 @@ class MealPlanView(AuthenticatedAPIView):
         if len(meal_plans) > 4:
             return api_error("meal_plans too many meal plans")
         plan_id = "".join(sorted([str(mp['food_item_id']) for mp in meal_plans]))
-        user = User.objects.get(pk=request.data['user'])
-        for plan in meal_plans:
-            try:
-                food_item = FoodItem.objects.get(pk=plan['food_item_id'])
-            except FoodItem.DoesNotExist:
-                return api_error("food item doesn't exist")
 
-            meal_plan = MealPlan.objects.filter(meal_plan_id=plan['food_item_id'])
-            if not meal_plan.exists():
-                meal_plan = update_or_create_meal_plan(plan_id,
-                                                       user, request.data['meal_date_time'], food_item)
+        print('meal_plans ----------->',request.data['user'])
+
+        try:
+            user = User.objects.get(pk=request.data['user'])
+        except User.DoesNotExist:
+            return api_error("User does not exist")
+
+        with transaction.atomic():
+            for plan in meal_plans:
+                try:
+                    food_item = FoodItem.objects.get(pk=plan['food_item_id'])
+                except FoodItem.DoesNotExist:
+                    return api_error("food item doesn't exist")
+
+                meal_plan = MealPlan.objects.filter(meal_plan_id=plan['food_item_id'])
+                if not meal_plan.exists():
+                    update_or_create_meal_plan(plan_id, user, request.data['meal_date_time'], food_item)
 
         return api_created_success({"message": "Meal plan added successfully"})
 
@@ -92,7 +98,7 @@ class NutrientView(AuthenticatedAPIView):
         super().__init__(**kwargs)
         self.gemini = GeminiApi()
 
-    def get(self, request, user_id):
+    def get(self, _, user_id):
         meal_plan = MealPlan.objects.filter(user=user_id)
         meal_plan_data = MealPlanSerializer(meal_plan, many=True).data
         for i in range(len(meal_plan)):
@@ -102,8 +108,9 @@ class NutrientView(AuthenticatedAPIView):
             # print("food_item", )
         return api_success(meal_plan_data)
 
-    @transaction.atomic
+
     def post(self, request):
+        print('request ----->', request.data)
         if not request.data.get('meal') or not request.data.get('user'):
             return api_error("user and meal are required")
 
@@ -143,7 +150,6 @@ class NutrientView(AuthenticatedAPIView):
         gemini_results = self.gemini.nutrients_from_food(foods)['results']
 
         food_objects = []
-        response_list = []
 
         for result in gemini_results:
             if result.get('error'):
@@ -159,9 +165,9 @@ class NutrientView(AuthenticatedAPIView):
                 other_nutrients=nutrients.get('other_nutrients', ''),
             )
             food_objects.append(food_obj)
-
-        # Bulk insert all food items
-        created_foods = FoodItem.objects.bulk_create(food_objects)
+        with transaction.atomic():
+            # Bulk insert all food items
+            created_foods = FoodItem.objects.bulk_create(food_objects)
 
         if food_exist:
             # We have one existing food in the db

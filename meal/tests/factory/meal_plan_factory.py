@@ -22,9 +22,9 @@ class MealPlanFactory:
         request = self.factory.post(self.base_path, data=data)
         return self.view(request)
 
-    def delete_meal_plan(self, plan_id):
-        request = self.factory.delete(self.base_path, data=plan_id)
-        return self.view(request)
+    def delete_meal_plan(self, plan_id, user_id):
+        request = self.factory.delete(f'{self.base_path}?plan_id={plan_id}')
+        return self.view(request, user_id)
 
 
     def tear_down(self):
