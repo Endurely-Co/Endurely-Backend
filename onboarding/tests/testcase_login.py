@@ -42,7 +42,7 @@ class LoginTestCase(unittest.TestCase):
         )
         mock_authenticate.return_value = mock_user
         response = self.factory.login(login_request)
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(201, response.status_code)
         self.assertEqual(response.data, mock_api_created_success.return_value.data)
         mock_authenticate.assert_called_with(username=login_request['username'], password=login_request['password'])
         mock_get_tokens_for_user.assert_called_with(mock_user)

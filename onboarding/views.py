@@ -81,7 +81,7 @@ class LoginView(APIView):
         user = authenticate(username=username, password=password)
         if user:
             tokens = get_tokens_for_user(user)  # Generate JWT tokens
-            return api_success({
+            return api_created_success({
                 "user_id": user.id,
                 "username": user.username,
                 "first_name": user.first_name,
