@@ -38,7 +38,6 @@ class MealPlanView(AuthenticatedAPIView):
     def get(self, request, user_id):
         meal_plan_id = request.query_params.get('plan_id')
         meal_plan = MealPlan.objects.filter(user=user_id)
-        print('calledddd', meal_plan)
         if meal_plan_id:
             meal_plan = meal_plan.filter(meal_plan_id=meal_plan_id)
         meal_plan_data = MealPlanSerializer(meal_plan, many=True).data
@@ -141,7 +140,6 @@ class NutrientView(AuthenticatedAPIView):
                 for food in food_items:
                     if food not in [f.item for f in food_item_query]:
                         foods = food
-                print('one exist', food_exist)
 
         # Get results from gemini API
         gemini_results = self.gemini.nutrients_from_food(foods)['results']

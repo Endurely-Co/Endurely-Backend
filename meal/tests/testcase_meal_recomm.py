@@ -72,7 +72,6 @@ class MealRecommendationTestCase(unittest.TestCase):
         mock_api_error.return_value = api_error('Bad request')
         mock_serializer_class.return_value = FakeMealInfoSerializer(data=mock_request)
         response = _build_recommendation_factory_post(mock_request)
-        print('meal_info_serializer', response)
         # check that api_error is called
         mock_api_error.assert_called()
 

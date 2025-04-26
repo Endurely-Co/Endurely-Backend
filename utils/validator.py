@@ -11,6 +11,7 @@ class Messages:
 class Status:
     INVALID_REQUEST = 400
     SUCCESS = 200
+    CREATED_SUCCESS = 201
 
 
 def validate_email(email: str):
