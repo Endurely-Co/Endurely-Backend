@@ -4,8 +4,7 @@ from unittest.mock import patch, MagicMock
 from django.db import IntegrityError
 
 from onboarding.tests.factory.create_acct_factory import CreateAcctFactory
-from utils.api import api_error
-from utils.exceptions import WeakPasswordError
+from utils.api import api_error, api_created_success
 
 
 class CreateAccountTestCase(unittest.TestCase):
@@ -107,5 +106,46 @@ class CreateAccountTestCase(unittest.TestCase):
         self.assertEqual(400, response.status_code)
         self.assertEqual({'code': 400, 'message': error_msg}, response.data)
         mock_api_error.assert_called_with(error_msg)
+
+
+    @patch('onboarding.views.api_created_success')
+    @patch('onboarding.views.User.objects')
+    def test_create_account_success(self, mock_user_objs, mock_api_created_success):
+
+        mock_user = MagicMock()
+        mock_user.id = 12
+        mock_user.username = "john"
+        mock_user.first_name = "John"
+        mock_user.last_name = "Doe"
+        mock_user.acct_type = 'verify'
+        mock_user.email = 'john@gm.com'
+        mock_user_objs.create_user.return_value = mock_user
+        fake_response = {
+            "username": mock_user.username,
+            "first_name": mock_user.first_name,
+            "last_name": mock_user.last_name,
+            "email": mock_user.email,
+            "acct_type": mock_user.acct_type
+        }
+        mock_api_created_success.return_value = api_created_success(fake_response)
+        fake_request = {
+            "first_name": "John",
+            "username": "john",
+            "password": "1Ab!456",
+            "last_name": "Doe",
+            'email': 'john@gm.com'
+        }
+
+        response = self.factory.create_acct(fake_request)
+        mock_user_objs.save.return_value = None
+
+        self.assertEqual(201, response.status_code)
+        self.assertEqual(response.data, mock_api_created_success.return_value.data)
+        mock_user_objs.create_user.assert_called_with(
+            username=fake_request['username'],
+            password=fake_request['password'],
+            email=fake_request['email']
+        )
+
 
 
