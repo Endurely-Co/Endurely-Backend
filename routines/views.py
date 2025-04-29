@@ -1,17 +1,12 @@
-from datetime import timedelta
-from threading import Thread
 import uuid
+from datetime import timedelta
 
 from django.db import transaction
 from django.http import Http404
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework import permissions, status
+
 from utils.api import api_success, api_error, api_created_success
 from utils.api_ext import AuthenticatedAPIView
-from utils.gemini import GeminiApi
 from utils.validator import check_none
-
 from .models import Exercise, FitnessRoutine, UserExercise
 from .serializers import GetExercisesSerializer, FitnessRoutineSerializer, UserExerciseSerializer
 
