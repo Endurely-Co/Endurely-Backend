@@ -20,9 +20,12 @@ from .serializers import GetExercisesSerializer, FitnessRoutineSerializer, UserE
 class GetExercises(AuthenticatedAPIView):
 
     def get(self, _):
-        snippets = Exercise.objects.all().order_by('category')
-        serializer = GetExercisesSerializer(snippets, many=True)
-        return api_success(serializer.data)
+        try:
+            snippets = Exercise.objects.all().order_by('category')
+            serializer = GetExercisesSerializer(snippets, many=True)
+            return api_success(serializer.data)
+        except Exception as err:
+            return api_error('Invalid server error')
 
 
 class GetExercisesByCategory(AuthenticatedAPIView):
@@ -34,7 +37,7 @@ class GetExercisesByCategory(AuthenticatedAPIView):
         serializer = GetExercisesSerializer(snippets, many=True)
         return api_success(serializer.data)
 
-
+# TODO: To be removed
 class GetCategories(AuthenticatedAPIView):
 
     def get(self, _):
