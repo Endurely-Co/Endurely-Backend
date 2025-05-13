@@ -4,7 +4,7 @@ from unittest.mock import patch, MagicMock
 
 from django.contrib.auth.models import AbstractUser
 
-from meal.models import FoodItem
+from meal.models import FoodItem, MealPlan
 from meal.tests.factory.meal_plan_factory import MealPlanFactory
 from utils.api import api_success, api_error, api_created_success
 from utils.validator import Status
@@ -131,8 +131,8 @@ class MealPlanViewTestCase(unittest.TestCase):
     @patch('meal.views.transaction')
     @patch('meal.views.User.objects')
     @patch('meal.views.FoodItem.objects')
-    @patch('meal.views.MealPlan.objects.filter')
-    def test_post_meal_plan_not_exist(self, mock_meal_plan_filter, mock_fi_objs, mock_user_objs,
+    @patch('meal.views.MealPlan.objects.get')
+    def test_post_meal_plan_not_exist(self, mock_meal_plan_get, mock_fi_objs, mock_user_objs,
                             mock_transaction, mock_update_or_create_meal_plan,
                             mock_api_created_success):
         success_res = {"message": "Meal plan added successfully"}
@@ -151,16 +151,17 @@ class MealPlanViewTestCase(unittest.TestCase):
         mock_transaction.atomic.return_value = mock_atomic
         mock_api_created_success.return_value = api_created_success(success_res)
 
-        mock_meal_plan = mock_meal_plan_filter.return_value
-        mock_meal_plan.exists.return_value = False
+       # mock_meal_plan = mock_meal_plan_get.return_value
+        mock_meal_plan_get.side_effect = MealPlan.DoesNotExist('meal_plan already exists')
 
         # Test meal already exists
-        mock_update_or_create_meal_plan.return_value =None
+        mock_update_or_create_meal_plan.return_value = None, True
         response = self.factory.add_meal_plan(mock_request.data.return_value)
         mock_update_or_create_meal_plan.assert_called_with('012', user_id,
                                                            mock_request.data.return_value['meal_date_time'],
                                                            mock_fi_objs.get.return_value)
         mock_transaction.atomic.assert_called()
+        print('response.data', response.data)
         mock_api_created_success.assert_called_with(success_res)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'data': success_res})
@@ -201,7 +202,6 @@ class MealPlanViewTestCase(unittest.TestCase):
         mock_api_created_success.assert_called_with(success_res)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'data': success_res})
-        self.assertTrue(mock_meal_plan.exists())
 
     @patch('meal.views.api_error')
     def test_delete_meal_plan(self, mock_api_error):
