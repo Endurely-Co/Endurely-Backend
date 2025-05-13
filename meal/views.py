@@ -87,8 +87,6 @@ class MealPlanView(AuthenticatedAPIView):
                 except FoodItem.DoesNotExist:
                     return api_error("food item doesn't exist")
 
-                print('[FoodItem]', food_item)
-
                 created = True
                 try:
                     meal_plan = MealPlan.objects.get(meal_plan_id=plan['food_item_id'], user=user)

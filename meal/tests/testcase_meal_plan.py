@@ -174,8 +174,8 @@ class MealPlanViewTestCase(unittest.TestCase):
     @patch('meal.views.transaction')
     @patch('meal.views.User.objects')
     @patch('meal.views.FoodItem.objects')
-    @patch('meal.views.MealPlan.objects.filter')
-    def test_post_meal_plan_meal_exist(self, mock_meal_plan_filter, mock_fi_objs, mock_user_objs,
+    @patch('meal.views.MealPlan.objects.get')
+    def test_post_meal_plan_meal_exist(self, mock_meal_plan_get, mock_fi_objs, mock_user_objs,
                             mock_transaction, mock_api_created_success):
         success_res = {"message": "Meal plan added successfully"}
         mock_request = MagicMock()
@@ -189,12 +189,14 @@ class MealPlanViewTestCase(unittest.TestCase):
         mock_user_objs.get.return_value = user_id
         mock_fi_objs.get.return_value = 3
 
-        mock_atomic = MagicMock()
-        mock_transaction.atomic.return_value = mock_atomic
         mock_api_created_success.return_value = api_created_success(success_res)
 
-        mock_meal_plan = mock_meal_plan_filter.return_value
-        mock_meal_plan.exists.return_value = True
+        mock_atomic = MagicMock()
+        mock_transaction.atomic.return_value = mock_atomic
+        mock_meal_plan_get.return_value = api_created_success(success_res)
+
+        mock_meal_plan = mock_meal_plan_get.return_value
+        mock_meal_plan.return_value = None
 
         response = self.factory.add_meal_plan(mock_request.data.return_value)
 
