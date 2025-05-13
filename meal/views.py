@@ -53,8 +53,12 @@ class MealPlanView(AuthenticatedAPIView):
     def delete(self, request, user_id):
         meal_to_delete = request.query_params.get('plan_id')
         if meal_to_delete:
-            MealPlan.objects.filter(user=user_id).filter(meal_plan_id=meal_to_delete)
-            return api_success("Meal plan successfully deleted")
+            try:
+                meal_plan = MealPlan.objects.filter(meal_plan_id=meal_to_delete, user=user_id)
+                meal_plan.delete()
+                return api_success("Meal plan successfully deleted")
+            except Exception as err:
+                return api_error('Invalid server error')
         return api_error("plan_id is required")
 
     # meal, calorie rm -rf mealplan/migrations
@@ -75,6 +79,7 @@ class MealPlanView(AuthenticatedAPIView):
         except User.DoesNotExist:
             return api_error("User does not exist")
 
+        success_msg = []
         with transaction.atomic():
             for plan in meal_plans:
                 try:
@@ -82,11 +87,17 @@ class MealPlanView(AuthenticatedAPIView):
                 except FoodItem.DoesNotExist:
                     return api_error("food item doesn't exist")
 
-                meal_plan = MealPlan.objects.filter(meal_plan_id=plan['food_item_id'])
-                if not meal_plan.exists():
-                    update_or_create_meal_plan(plan_id, user, request.data['meal_date_time'], food_item)
+                print('[FoodItem]', food_item)
 
-        return api_created_success({"message": "Meal plan added successfully"})
+                created = True
+                try:
+                    meal_plan = MealPlan.objects.get(meal_plan_id=plan['food_item_id'], user=user)
+                except MealPlan.DoesNotExist:
+                    meal_plan, created = update_or_create_meal_plan(plan_id, user, request.data['meal_date_time'], food_item)
+
+        if created:
+            return api_created_success({"message": "Meal plan added successfully"})
+        return api_error("Meal plan was not added. Please try again later")
 
 
 class NutrientView(AuthenticatedAPIView):

@@ -33,7 +33,7 @@ class FoodItem(models.Model):
 
 class MealPlan(models.Model):
     created_at = models.DateTimeField(default=now, null=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     food_item = models.ForeignKey(FoodItem, on_delete=models.CASCADE, null=True)
     food_name = models.CharField(null=True, blank=True, max_length=100, default="")
     meal_plan_id = models.CharField(null=True, blank=True, max_length=50, default="")

@@ -12,12 +12,17 @@ def update_or_create_meal_plan(meal_plan_id, user, meal_date_time, food_item=Non
     defaults = {
         "user": user,
     }
+    print("meal_plan_id exists?", meal_plan_id,  MealPlan.objects.filter(meal_plan_id=meal_plan_id, user=user).exists())
+
+    print('food_item----->', food_item.item, food_item)
     if food_item:
         defaults["food_item"] = food_item
         defaults["food_name"] = food_item.item
         defaults['meal_date_time'] = meal_date_time
+        defaults['meal_plan_id'] = meal_plan_id
     meal_plan, created = MealPlan.objects.update_or_create(
-        meal_plan_id=meal_plan_id,  # Lookup field
+        meal_plan_id=meal_plan_id,
+        user=user,# Lookup field
         defaults=defaults
     )
     return meal_plan, created
