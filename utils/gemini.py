@@ -7,9 +7,9 @@ from google.genai.types import GenerateContentResponse
 from platformi import is_github
 
 if is_github():
-    from utils.secrets import Secrets as SecretEnv
-else:
     from utils.gh_secrets import GHSecrets as SecretEnv
+else:
+    from utils.secrets import Secrets as SecretEnv
 
 
 class GeminiPrompts:
