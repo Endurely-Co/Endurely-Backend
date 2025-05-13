@@ -23,29 +23,6 @@ class GetExercises(AuthenticatedAPIView):
             return api_error('Invalid server error')
 
 
-class GetExercisesByCategory(AuthenticatedAPIView):
-
-    def get(self, _, category):
-        if len(category) > 2 or not str(category).isalpha():
-            return api_error('Wrong category id')
-        snippets = Exercise.objects.all().filter(category=category)
-        serializer = GetExercisesSerializer(snippets, many=True)
-        return api_success(serializer.data)
-
-# TODO: To be removed
-class GetCategories(AuthenticatedAPIView):
-
-    def get(self, _):
-        snippets = Exercise.objects.all().order_by('category')
-        response_array = {}
-        for i in range(len(snippets)):
-            response_array[snippets[i].category] = {
-                "category": snippets[i].category,
-                "category_name": snippets[i].get_category_display()
-            }
-        return api_success(response_array.values())
-
-
 class FitnessRoutineView(AuthenticatedAPIView):
 
     def get_object(self, pk, routine_id=None):
@@ -74,6 +51,7 @@ class FitnessRoutineView(AuthenticatedAPIView):
                 exercise = exercise_map.get(exercise_obj['id'])
                 if not exercise:
                     return api_error(f"Exercise with ID {exercise_obj['id']} not found")
+
 
                 hours, minutes, seconds = map(int, exercise_obj['duration'].split(":"))
                 user_exercise = UserExercise.objects.create(

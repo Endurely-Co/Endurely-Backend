@@ -42,7 +42,7 @@ def api_created_success(value):
     return Response(data={"data": value}, status=status.HTTP_201_CREATED, )
 
 
-def api_error(msg: str):
+def api_error(msg):
     return Response(status=Status.INVALID_REQUEST, data={
         "code": Status.INVALID_REQUEST,
         "message": msg if msg else Messages.generic_error()
