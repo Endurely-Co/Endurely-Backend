@@ -196,5 +196,3 @@ class FitnessRoutineView(AuthenticatedAPIView):
             return api_success(f"No routine matching this id: {routine_param}")
         snippet.delete()
         return api_success("Routine was deleted.")
-
-# 23cf0668153e4d18a4a4bc3ab0f7a0f9

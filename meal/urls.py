@@ -24,7 +24,5 @@ urlpatterns = [
     path('plan', views.MealPlanView.as_view(), name="meal-goals"),
     path('recommendations', views.MealRecommendationView.as_view(), name="meal-recommendations"),
     path('recommendations/new', views.MealRecommendationView.as_view(), name="meal-recommendations-add")
-    #MealRecommendationView
-    # NutritionView
 
 ]
