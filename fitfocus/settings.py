@@ -52,7 +52,6 @@ INSTALLED_APPS = [
     'onboarding',
     'routines',
     'meal',
-    'fitness',
     'utils'
 ]
 
