@@ -13,8 +13,19 @@ from utils.gemini import GeminiApi
 
 # deprecated
 class MealRecommendationView(AuthenticatedAPIView):
+    """
+    This view is deprecated and should not be used.
+    It was intended to retrieve and create MealInfo objects.
+    """
 
     def get(self, _):
+        """
+        Retrieves all MealInfo objects.
+
+        Returns:
+            api_success: A list of serialized MealInfo objects if successful.
+            api_error: An error message if an exception occurs.
+        """
         try:
             meal_data = MealInfo.objects.all()
             serializer = MealInfoSerializer(meal_data, many=True)
@@ -23,6 +34,16 @@ class MealRecommendationView(AuthenticatedAPIView):
             return api_error('Invalid server error')
 
     def post(self, request, *args, **kwargs):
+        """
+        Creates a new MealInfo object.
+
+        Args:
+            request: The HTTP request object containing the MealInfo data.
+
+        Returns:
+            api_created_success: The serialized MealInfo object if creation is successful.
+            api_error: An error message if the data is invalid.
+        """
         serializers = MealInfoSerializer(data=request.data)
 
         if serializers.is_valid():
@@ -34,8 +55,22 @@ class MealRecommendationView(AuthenticatedAPIView):
 
 
 class MealPlanView(AuthenticatedAPIView):
+    """
+    This view handles operations related to MealPlan objects,
+    including retrieving, deleting, and creating meal plans.
+    """
 
     def get(self, request, user_id):
+        """
+        Retrieves MealPlan objects for a specific user.
+
+        Args:
+            request: The HTTP request object.
+            user_id: The ID of the user whose meal plans are to be retrieved.
+
+        Returns:
+            api_success: A list of serialized MealPlan objects with associated food item nutrients.
+        """
         meal_plan_id = request.query_params.get('plan_id')
         meal_plan = MealPlan.objects.filter(user=user_id)
         if meal_plan_id:
@@ -51,6 +86,17 @@ class MealPlanView(AuthenticatedAPIView):
         return api_success(meal_plan_data)
 
     def delete(self, request, user_id):
+        """
+        Deletes a specific MealPlan object for a user.
+
+        Args:
+            request: The HTTP request object.
+            user_id: The ID of the user whose meal plan is to be deleted.
+
+        Returns:
+            api_success: A success message if the meal plan is deleted.
+            api_error: An error message if the plan_id is missing or an exception occurs.
+        """
         meal_to_delete = request.query_params.get('plan_id')
         if meal_to_delete:
             try:
@@ -61,8 +107,17 @@ class MealPlanView(AuthenticatedAPIView):
                 return api_error('Invalid server error')
         return api_error("plan_id is required")
 
-    # meal, calorie rm -rf mealplan/migrations
     def post(self, request, *args, **kwargs):
+        """
+        Creates MealPlan objects for a user.
+
+        Args:
+            request: The HTTP request object containing meal plan data.
+
+        Returns:
+            api_created_success: A success message if meal plans are created successfully.
+            api_error: An error message if there are issues with the input data, user, or food item.
+        """
         meal_plans = request.data.get('meal_plans')
         if not meal_plans:
             return api_error("meal_plans is absent")
@@ -99,12 +154,29 @@ class MealPlanView(AuthenticatedAPIView):
 
 
 class NutrientView(AuthenticatedAPIView):
+    """
+    This view handles operations related to retrieving nutrient information
+    and fetching nutrient data for food items using Gemini API.
+    """
 
     def __init__(self, **kwargs):
+        """
+        Initializes the NutrientView with a GeminiApi instance.
+        """
         super().__init__(**kwargs)
         self.gemini = GeminiApi()
 
     def get(self, _, user_id):
+        """
+        Retrieves meal plan data with associated nutrient information for a user.
+
+        Args:
+            _: The HTTP request object (not used).
+            user_id: The ID of the user.
+
+        Returns:
+            api_success: Meal plan data with 'other_nutrients' from the associated food items.
+        """
         meal_plan = MealPlan.objects.filter(user=user_id)
         meal_plan_data = MealPlanSerializer(meal_plan, many=True).data
         for i in range(len(meal_plan)):
@@ -114,8 +186,18 @@ class NutrientView(AuthenticatedAPIView):
             # print("food_item", )
         return api_success(meal_plan_data)
 
-
     def post(self, request):
+        """
+        Retrieves nutrient information for given food items, either from the database
+        or using the Gemini API.  Creates FoodItem objects if they don't exist in the database.
+
+        Args:
+            request: The HTTP request object containing the user ID and meal (food items).
+
+        Returns:
+            api_created_success:  Nutrient information for the food items.
+            api_error: An error message if input is invalid or an issue occurs during processing.
+        """
         if not request.data.get('meal') or not request.data.get('user'):
             return api_error("user and meal are required")
 

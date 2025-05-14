@@ -53,31 +53,3 @@ class FitnessRoutine(models.Model):
     completed = BooleanField(default=False, null=False)
     created_at = models.DateTimeField(default=now, null=False)
     start_date = models.DateTimeField(null=False, default=now)
-    #day = models.CharField(max_length=10, choices=WEEK_DAYS, default=WEEK_DAYS[0][0])
-
-    # routine_set = IntegerField(default=0, null=False)
-    # routine_reps = IntegerField(default=0, null=False)
-    # routine_duration = DurationField(null=False, default=timedelta)
-
-
-
-
-# todo: remove model
-# class Nutrition(models.Model):
-#     created_at = models.DateTimeField(default=now, null=False)
-#     nutrient = models.CharField(max_length=1000, default='', null=False)
-#     food_name = models.CharField(max_length=100, null=False, default='')
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-
-
-# class FitnessRecommendation(models.Model):
-#     SEX = [
-#         ('M', 'Male'),
-#         ('F', 'Female'),
-#         ('P', 'Prefer not to say')
-#     ]
-#     created_at = models.DateTimeField(default=now, null=False)
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     height = models.FloatField(null=False, default=0)
-#     sex = models.CharField(default=SEX[-1], choices=SEX, max_length=20)
-#     fitness_goal = models.CharField(null=False, default='')
