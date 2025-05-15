@@ -1,0 +1,19 @@
+routines.urls
+=============
+
+.. py:module:: routines.urls
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   routines.urls.urlpatterns
+
+
+Module Contents
+---------------
+
+.. py:data:: urlpatterns
+

@@ -1,0 +1,35 @@
+onboarding.apps
+===============
+
+.. py:module:: onboarding.apps
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   onboarding.apps.OnboardingConfig
+
+
+Module Contents
+---------------
+
+.. py:class:: OnboardingConfig(app_name, app_module)
+
+   Bases: :py:obj:`django.apps.AppConfig`
+
+
+   Class representing a Django application and its configuration.
+
+
+   .. py:attribute:: default_auto_field
+      :value: 'django.db.models.BigAutoField'
+
+
+
+   .. py:attribute:: name
+      :value: 'onboarding'
+
+
+

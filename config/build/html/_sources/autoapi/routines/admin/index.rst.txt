@@ -1,0 +1,6 @@
+routines.admin
+==============
+
+.. py:module:: routines.admin
+
+

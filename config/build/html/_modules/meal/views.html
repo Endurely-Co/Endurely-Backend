@@ -1,0 +1,395 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>meal.views &mdash; mydoc  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            mydoc
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">mydoc</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">meal.views</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for meal.views</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">transaction</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">meal.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">MealPlan</span><span class="p">,</span> <span class="n">MealInfo</span><span class="p">,</span> <span class="n">FoodItem</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">meal.serializers</span><span class="w"> </span><span class="kn">import</span> <span class="n">MealPlanSerializer</span><span class="p">,</span> <span class="n">MealInfoSerializer</span><span class="p">,</span> <span class="n">FoodItemSerializer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">utils.api</span><span class="w"> </span><span class="kn">import</span> <span class="n">api_created_success</span><span class="p">,</span> <span class="n">api_error</span><span class="p">,</span> <span class="n">api_success</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">utils.api_ext</span><span class="w"> </span><span class="kn">import</span> <span class="n">AuthenticatedAPIView</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">utils.fitmodels</span><span class="w"> </span><span class="kn">import</span> <span class="n">update_or_create_meal_plan</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">utils.gemini</span><span class="w"> </span><span class="kn">import</span> <span class="n">GeminiApi</span>
+
+
+<span class="c1"># Create your views here.</span>
+
+<span class="c1"># deprecated</span>
+<div class="viewcode-block" id="MealRecommendationView">
+<a class="viewcode-back" href="../../autoapi/meal/views/index.html#meal.views.MealRecommendationView">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MealRecommendationView</span><span class="p">(</span><span class="n">AuthenticatedAPIView</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This view is deprecated and should not be used.</span>
+<span class="sd">    It was intended to retrieve and create MealInfo objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="MealRecommendationView.get">
+<a class="viewcode-back" href="../../autoapi/meal/views/index.html#meal.views.MealRecommendationView.get">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves all MealInfo objects.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            api_success: A list of serialized MealInfo objects if successful.</span>
+<span class="sd">            api_error: An error message if an exception occurs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">meal_data</span> <span class="o">=</span> <span class="n">MealInfo</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="n">serializer</span> <span class="o">=</span> <span class="n">MealInfoSerializer</span><span class="p">(</span><span class="n">meal_data</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">api_success</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">api_error</span><span class="p">(</span><span class="s1">&#39;Invalid server error&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MealRecommendationView.post">
+<a class="viewcode-back" href="../../autoapi/meal/views/index.html#meal.views.MealRecommendationView.post">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a new MealInfo object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            request: The HTTP request object containing the MealInfo data.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            api_created_success: The serialized MealInfo object if creation is successful.</span>
+<span class="sd">            api_error: An error message if the data is invalid.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">serializers</span> <span class="o">=</span> <span class="n">MealInfoSerializer</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">serializers</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+            <span class="n">serializers</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">api_created_success</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">key_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">api_error</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39; and &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+                                           <span class="s2">&quot;are&quot;</span> <span class="k">if</span> <span class="n">key_len</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;is&quot;</span><span class="p">,</span> <span class="s2">&quot;missing&quot;</span><span class="p">))</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="MealPlanView">
+<a class="viewcode-back" href="../../autoapi/meal/views/index.html#meal.views.MealPlanView">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MealPlanView</span><span class="p">(</span><span class="n">AuthenticatedAPIView</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This view handles operations related to MealPlan objects,</span>
+<span class="sd">    including retrieving, deleting, and creating meal plans.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="MealPlanView.get">
+<a class="viewcode-back" href="../../autoapi/meal/views/index.html#meal.views.MealPlanView.get">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves MealPlan objects for a specific user.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            request: The HTTP request object.</span>
+<span class="sd">            user_id: The ID of the user whose meal plans are to be retrieved.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            api_success: A list of serialized MealPlan objects with associated food item nutrients.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">meal_plan_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">query_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;plan_id&#39;</span><span class="p">)</span>
+        <span class="n">meal_plan</span> <span class="o">=</span> <span class="n">MealPlan</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">meal_plan_id</span><span class="p">:</span>
+            <span class="n">meal_plan</span> <span class="o">=</span> <span class="n">meal_plan</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">meal_plan_id</span><span class="o">=</span><span class="n">meal_plan_id</span><span class="p">)</span>
+        <span class="n">meal_plan_data</span> <span class="o">=</span> <span class="n">MealPlanSerializer</span><span class="p">(</span><span class="n">meal_plan</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">meal_plan</span><span class="p">)):</span>
+            <span class="n">serialized_food</span> <span class="o">=</span> <span class="n">FoodItemSerializer</span><span class="p">(</span><span class="n">meal_plan</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">food_item</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+            <span class="k">if</span> <span class="n">meal_plan_id</span><span class="p">:</span>
+                <span class="n">meal_plan_data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;nutrients&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">serialized_food</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">meal_plan_data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;other_nutrients&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">serialized_food</span><span class="p">[</span><span class="s1">&#39;other_nutrients&#39;</span><span class="p">]</span>
+            <span class="c1"># print(&quot;food_item&quot;, )</span>
+        <span class="k">return</span> <span class="n">api_success</span><span class="p">(</span><span class="n">meal_plan_data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MealPlanView.delete">
+<a class="viewcode-back" href="../../autoapi/meal/views/index.html#meal.views.MealPlanView.delete">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Deletes a specific MealPlan object for a user.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            request: The HTTP request object.</span>
+<span class="sd">            user_id: The ID of the user whose meal plan is to be deleted.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            api_success: A success message if the meal plan is deleted.</span>
+<span class="sd">            api_error: An error message if the plan_id is missing or an exception occurs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">meal_to_delete</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">query_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;plan_id&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">meal_to_delete</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">meal_plan</span> <span class="o">=</span> <span class="n">MealPlan</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">meal_plan_id</span><span class="o">=</span><span class="n">meal_to_delete</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user_id</span><span class="p">)</span>
+                <span class="n">meal_plan</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+                <span class="k">return</span> <span class="n">api_success</span><span class="p">(</span><span class="s2">&quot;Meal plan successfully deleted&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">api_error</span><span class="p">(</span><span class="s1">&#39;Invalid server error&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">api_error</span><span class="p">(</span><span class="s2">&quot;plan_id is required&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MealPlanView.post">
+<a class="viewcode-back" href="../../autoapi/meal/views/index.html#meal.views.MealPlanView.post">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates MealPlan objects for a user.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            request: The HTTP request object containing meal plan data.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            api_created_success: A success message if meal plans are created successfully.</span>
+<span class="sd">            api_error: An error message if there are issues with the input data, user, or food item.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">meal_plans</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;meal_plans&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">meal_plans</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">api_error</span><span class="p">(</span><span class="s2">&quot;meal_plans is absent&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">meal_plans</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">list</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">api_error</span><span class="p">(</span><span class="s2">&quot;meal_plans is not valid. Expected: list of meal plans&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">meal_plans</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">api_error</span><span class="p">(</span><span class="s2">&quot;meal_plans too many meal plans&quot;</span><span class="p">)</span>
+        <span class="n">plan_id</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">mp</span><span class="p">[</span><span class="s1">&#39;food_item_id&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">mp</span> <span class="ow">in</span> <span class="n">meal_plans</span><span class="p">]))</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="n">User</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">api_error</span><span class="p">(</span><span class="s2">&quot;User does not exist&quot;</span><span class="p">)</span>
+
+        <span class="n">success_msg</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">with</span> <span class="n">transaction</span><span class="o">.</span><span class="n">atomic</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">plan</span> <span class="ow">in</span> <span class="n">meal_plans</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">food_item</span> <span class="o">=</span> <span class="n">FoodItem</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">plan</span><span class="p">[</span><span class="s1">&#39;food_item_id&#39;</span><span class="p">])</span>
+                <span class="k">except</span> <span class="n">FoodItem</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">api_error</span><span class="p">(</span><span class="s2">&quot;food item doesn&#39;t exist&quot;</span><span class="p">)</span>
+
+                <span class="n">created</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">meal_plan</span> <span class="o">=</span> <span class="n">MealPlan</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">meal_plan_id</span><span class="o">=</span><span class="n">plan</span><span class="p">[</span><span class="s1">&#39;food_item_id&#39;</span><span class="p">],</span> <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">MealPlan</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+                    <span class="n">meal_plan</span><span class="p">,</span> <span class="n">created</span> <span class="o">=</span> <span class="n">update_or_create_meal_plan</span><span class="p">(</span><span class="n">plan_id</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;meal_date_time&#39;</span><span class="p">],</span> <span class="n">food_item</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">created</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">api_created_success</span><span class="p">({</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Meal plan added successfully&quot;</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">api_error</span><span class="p">(</span><span class="s2">&quot;Meal plan was not added. Please try again later&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="NutrientView">
+<a class="viewcode-back" href="../../autoapi/meal/views/index.html#meal.views.NutrientView">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">NutrientView</span><span class="p">(</span><span class="n">AuthenticatedAPIView</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This view handles operations related to retrieving nutrient information</span>
+<span class="sd">    and fetching nutrient data for food items using Gemini API.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the NutrientView with a GeminiApi instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gemini</span> <span class="o">=</span> <span class="n">GeminiApi</span><span class="p">()</span>
+
+<div class="viewcode-block" id="NutrientView.get">
+<a class="viewcode-back" href="../../autoapi/meal/views/index.html#meal.views.NutrientView.get">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves meal plan data with associated nutrient information for a user.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            _: The HTTP request object (not used).</span>
+<span class="sd">            user_id: The ID of the user.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            api_success: Meal plan data with &#39;other_nutrients&#39; from the associated food items.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">meal_plan</span> <span class="o">=</span> <span class="n">MealPlan</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user_id</span><span class="p">)</span>
+        <span class="n">meal_plan_data</span> <span class="o">=</span> <span class="n">MealPlanSerializer</span><span class="p">(</span><span class="n">meal_plan</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">meal_plan</span><span class="p">)):</span>
+            <span class="n">serialized_food</span> <span class="o">=</span> <span class="n">FoodItemSerializer</span><span class="p">(</span><span class="n">meal_plan</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">food_item</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">meal_plan_data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;other_nutrients&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">serialized_food</span><span class="p">[</span><span class="s1">&#39;other_nutrients&#39;</span><span class="p">]</span>
+            <span class="c1"># meal_plan_data[i][&quot;nutrients&quot;] = serialized_food</span>
+            <span class="c1"># print(&quot;food_item&quot;, )</span>
+        <span class="k">return</span> <span class="n">api_success</span><span class="p">(</span><span class="n">meal_plan_data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="NutrientView.post">
+<a class="viewcode-back" href="../../autoapi/meal/views/index.html#meal.views.NutrientView.post">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves nutrient information for given food items, either from the database</span>
+<span class="sd">        or using the Gemini API.  Creates FoodItem objects if they don&#39;t exist in the database.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            request: The HTTP request object containing the user ID and meal (food items).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            api_created_success:  Nutrient information for the food items.</span>
+<span class="sd">            api_error: An error message if input is invalid or an issue occurs during processing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;meal&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">api_error</span><span class="p">(</span><span class="s2">&quot;user and meal are required&quot;</span><span class="p">)</span>
+
+        <span class="n">foods</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;meal&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">foods</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">foods</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">api_error</span><span class="p">(</span><span class="s2">&quot;Food/drink is invalid. Try again!&quot;</span><span class="p">)</span>
+
+        <span class="n">food_items</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">foods</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">food_items</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">api_error</span><span class="p">(</span><span class="s2">&quot;Maximum of two food/drink is allowed!&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">))</span>
+            <span class="n">response_obj</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span>
+            <span class="p">}</span>
+        <span class="k">except</span> <span class="n">User</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">api_error</span><span class="p">(</span><span class="s2">&quot;User does not exist&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Look in the db</span>
+        <span class="n">food_item_query</span> <span class="o">=</span> <span class="n">FoodItem</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">item</span><span class="o">=</span><span class="n">food_items</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">food_items</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span> \
+            <span class="k">else</span> <span class="n">FoodItem</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">item__in</span><span class="o">=</span><span class="p">[</span><span class="n">food_items</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">food_items</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+        <span class="n">food_exist</span> <span class="o">=</span> <span class="n">food_item_query</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">food_exist</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">food_item_query</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">food_items</span><span class="p">):</span>
+                <span class="n">response_obj</span><span class="p">[</span><span class="s2">&quot;nutrients&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FoodItemSerializer</span><span class="p">(</span><span class="n">food_item_query</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+                <span class="k">return</span> <span class="n">api_created_success</span><span class="p">(</span><span class="n">response_obj</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">food</span> <span class="ow">in</span> <span class="n">food_items</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">food</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">item</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">food_item_query</span><span class="p">]:</span>
+                        <span class="n">foods</span> <span class="o">=</span> <span class="n">food</span>
+
+        <span class="c1"># Get results from gemini API</span>
+        <span class="n">gemini_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gemini</span><span class="o">.</span><span class="n">nutrients_from_food</span><span class="p">(</span><span class="n">foods</span><span class="p">)[</span><span class="s1">&#39;results&#39;</span><span class="p">]</span>
+
+        <span class="n">food_objects</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">gemini_results</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">api_error</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">])</span>
+
+            <span class="n">nutrients</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;nutrients&#39;</span><span class="p">]</span>
+            <span class="n">food_obj</span> <span class="o">=</span> <span class="n">FoodItem</span><span class="p">(</span>
+                <span class="n">item</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;item&#39;</span><span class="p">],</span>
+                <span class="n">valid</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;valid&#39;</span><span class="p">],</span>
+                <span class="n">macronutrients</span><span class="o">=</span><span class="n">nutrients</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;macronutrients&#39;</span><span class="p">,</span> <span class="p">[]),</span>
+                <span class="n">vitamins</span><span class="o">=</span><span class="n">nutrients</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;vitamins&#39;</span><span class="p">,</span> <span class="p">[]),</span>
+                <span class="n">minerals</span><span class="o">=</span><span class="n">nutrients</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;minerals&#39;</span><span class="p">,</span> <span class="p">[]),</span>
+                <span class="n">other_nutrients</span><span class="o">=</span><span class="n">nutrients</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;other_nutrients&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="n">food_objects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">food_obj</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">transaction</span><span class="o">.</span><span class="n">atomic</span><span class="p">():</span>
+            <span class="c1"># Bulk insert all food items</span>
+            <span class="n">created_foods</span> <span class="o">=</span> <span class="n">FoodItem</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">bulk_create</span><span class="p">(</span><span class="n">food_objects</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">food_exist</span><span class="p">:</span>
+            <span class="c1"># We have one existing food in the db</span>
+            <span class="n">created_foods</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">food_item_query</span><span class="p">)</span>
+
+        <span class="n">response_obj</span><span class="p">[</span><span class="s2">&quot;nutrients&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FoodItemSerializer</span><span class="p">(</span><span class="n">created_foods</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">return</span> <span class="n">api_created_success</span><span class="p">(</span><span class="n">response_obj</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, UP2160428.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

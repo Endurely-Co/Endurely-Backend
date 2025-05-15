@@ -1,0 +1,19 @@
+onboarding.urls
+===============
+
+.. py:module:: onboarding.urls
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   onboarding.urls.urlpatterns
+
+
+Module Contents
+---------------
+
+.. py:data:: urlpatterns
+

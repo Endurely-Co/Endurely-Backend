@@ -1,0 +1,19 @@
+API Reference
+=============
+
+This page contains auto-generated API reference documentation [#f1]_.
+
+.. toctree::
+   :titlesonly:
+
+   /autoapi/meal/index
+   /autoapi/routines/index
+   /autoapi/onboarding/index
+   /autoapi/login_factory/index
+   /autoapi/routine_factory/index
+   /autoapi/nutrient_factory/index
+   /autoapi/exercise_factory/index
+   /autoapi/meal_plan_factory/index
+   /autoapi/create_acct_factory/index
+
+.. [#f1] Created with `sphinx-autoapi <https://github.com/readthedocs/sphinx-autoapi>`_

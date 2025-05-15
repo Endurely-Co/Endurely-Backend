@@ -1,0 +1,45 @@
+login_factory
+=============
+
+.. py:module:: login_factory
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   login_factory.LoginFactory
+
+
+Module Contents
+---------------
+
+.. py:class:: LoginFactory(**defaults)
+
+   Bases: :py:obj:`rest_framework.test.APIRequestFactory`
+
+
+   Class that lets you create mock Request objects for use in testing.
+
+   Usage:
+
+   rf = RequestFactory()
+   get_request = rf.get('/hello/')
+   post_request = rf.post('/submit/', {'foo': 'bar'})
+
+   Once you have a request object you can pass it to any view function,
+   just as if that view had been hooked up using a URLconf.
+
+
+   .. py:attribute:: base_path
+      :value: '/login'
+
+
+
+   .. py:attribute:: view
+
+
+   .. py:method:: login(data)
+
+

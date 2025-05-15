@@ -1,0 +1,384 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>routines.views &mdash; mydoc  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            mydoc
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">mydoc</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">routines.views</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for routines.views</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">ValidationError</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">timedelta</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">transaction</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">Http404</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">utils.api</span><span class="w"> </span><span class="kn">import</span> <span class="n">api_success</span><span class="p">,</span> <span class="n">api_error</span><span class="p">,</span> <span class="n">api_created_success</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">utils.api_ext</span><span class="w"> </span><span class="kn">import</span> <span class="n">AuthenticatedAPIView</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">utils.validator</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_none</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Exercise</span><span class="p">,</span> <span class="n">FitnessRoutine</span><span class="p">,</span> <span class="n">UserExercise</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.serializers</span><span class="w"> </span><span class="kn">import</span> <span class="n">GetExercisesSerializer</span><span class="p">,</span> <span class="n">FitnessRoutineSerializer</span><span class="p">,</span> <span class="n">UserExerciseSerializer</span>
+
+
+<div class="viewcode-block" id="GetExercises">
+<a class="viewcode-back" href="../../autoapi/routines/views/index.html#routines.views.GetExercises">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GetExercises</span><span class="p">(</span><span class="n">AuthenticatedAPIView</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    API view to retrieve all exercises.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="GetExercises.get">
+<a class="viewcode-back" href="../../autoapi/routines/views/index.html#routines.views.GetExercises.get">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves all exercises from the database, ordered by category.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Response: An api_success response containing serialized exercise data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">exercises</span> <span class="o">=</span> <span class="n">Exercise</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">)</span>
+            <span class="n">serializer</span> <span class="o">=</span> <span class="n">GetExercisesSerializer</span><span class="p">(</span><span class="n">exercises</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">api_success</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">api_error</span><span class="p">(</span><span class="s1">&#39;Invalid server error&#39;</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="FitnessRoutineView">
+<a class="viewcode-back" href="../../autoapi/routines/views/index.html#routines.views.FitnessRoutineView">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FitnessRoutineView</span><span class="p">(</span><span class="n">AuthenticatedAPIView</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    API view to handle fitness routine operations (create, retrieve, update, delete).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="FitnessRoutineView.get_object">
+<a class="viewcode-back" href="../../autoapi/routines/views/index.html#routines.views.FitnessRoutineView.get_object">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pk</span><span class="p">,</span> <span class="n">routine_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves FitnessRoutine objects based on user ID and optionally a routine ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pk (int): User ID.</span>
+<span class="sd">            routine_id (str, optional): Routine ID. Defaults to None.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            QuerySet: A queryset of FitnessRoutine objects.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            Http404: If no FitnessRoutine is found for the given criteria.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">fitness_routine</span> <span class="o">=</span> <span class="n">FitnessRoutine</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">pk</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">fitness_routine</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">routine_id</span><span class="o">=</span><span class="n">routine_id</span><span class="p">)</span> <span class="k">if</span> <span class="n">routine_id</span> <span class="k">else</span> <span class="n">fitness_routine</span>
+        <span class="k">except</span> <span class="n">FitnessRoutine</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">Http404</span></div>
+
+
+<div class="viewcode-block" id="FitnessRoutineView.post">
+<a class="viewcode-back" href="../../autoapi/routines/views/index.html#routines.views.FitnessRoutineView.post">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a new fitness routine.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            request (HttpRequest): The HTTP request object. The request data should contain</span>
+<span class="sd">                a list of exercises with their IDs and durations.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Response: An api_created_success response containing the created routine data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">exercises_data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;exercises&#39;</span><span class="p">,</span> <span class="p">[])</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;routine_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span>  <span class="c1"># Generate a unique routine ID</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">exercises_data</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">api_error</span><span class="p">(</span><span class="s2">&quot;No exercises provided&quot;</span><span class="p">)</span>
+
+            <span class="n">exercise_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">exercise_obj</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">exercise_obj</span> <span class="ow">in</span> <span class="n">exercises_data</span><span class="p">]</span>
+
+            <span class="c1"># Bulk fetch all exercises to avoid N+1 queries</span>
+            <span class="n">exercise_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">exercise</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">exercise</span> <span class="k">for</span> <span class="n">exercise</span> <span class="ow">in</span> <span class="n">Exercise</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">id__in</span><span class="o">=</span><span class="n">exercise_ids</span><span class="p">)}</span>
+
+            <span class="n">exercises</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">with</span> <span class="n">transaction</span><span class="o">.</span><span class="n">atomic</span><span class="p">():</span>  <span class="c1"># Ensures all DB operations are atomic</span>
+                <span class="k">for</span> <span class="n">exercise_obj</span> <span class="ow">in</span> <span class="n">exercises_data</span><span class="p">:</span>
+                    <span class="n">exercise</span> <span class="o">=</span> <span class="n">exercise_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">exercise_obj</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">exercise</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">api_error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exercise with ID </span><span class="si">{</span><span class="n">exercise_obj</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> not found&quot;</span><span class="p">)</span>
+
+                    <span class="n">hours</span><span class="p">,</span> <span class="n">minutes</span><span class="p">,</span> <span class="n">seconds</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">exercise_obj</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">))</span>
+                    <span class="n">user_exercise</span> <span class="o">=</span> <span class="n">UserExercise</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                        <span class="n">exercise</span><span class="o">=</span><span class="n">exercise</span><span class="p">,</span>
+                        <span class="n">duration</span><span class="o">=</span><span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="n">hours</span><span class="p">,</span> <span class="n">minutes</span><span class="o">=</span><span class="n">minutes</span><span class="p">,</span> <span class="n">seconds</span><span class="o">=</span><span class="n">seconds</span><span class="p">)</span>
+                    <span class="p">)</span>
+
+                    <span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;exercise&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">user_exercise</span><span class="o">.</span><span class="n">id</span>
+                    <span class="n">routine_serializer</span> <span class="o">=</span> <span class="n">FitnessRoutineSerializer</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">routine_serializer</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+                        <span class="n">routine_serializer</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+                        <span class="n">user_exercise_serializer</span> <span class="o">=</span> <span class="n">UserExerciseSerializer</span><span class="p">(</span><span class="n">user_exercise</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+                        <span class="n">user_exercise_serializer</span><span class="p">[</span><span class="s1">&#39;exercise&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">GetExercisesSerializer</span><span class="p">(</span><span class="n">exercise</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+                        <span class="n">exercises</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">user_exercise_serializer</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">api_error</span><span class="p">(</span><span class="n">routine_serializer</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span>
+
+            <span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;exercise&#39;</span><span class="p">)</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;exercises&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">exercises</span>
+
+            <span class="k">return</span> <span class="n">api_created_success</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">ValidationError</span><span class="p">,</span> <span class="n">Http404</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">api_error</span><span class="p">(</span><span class="s1">&#39;Internal server error&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FitnessRoutineView.get">
+<a class="viewcode-back" href="../../autoapi/routines/views/index.html#routines.views.FitnessRoutineView.get">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves fitness routines for a given user, optionally filtered by routine ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            request (HttpRequest): The HTTP request object.</span>
+<span class="sd">            pk (int): User ID.</span>
+<span class="sd">            routine_id (str, optional): Routine ID. Defaults to None.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Response: An api_success response containing the serialized routine data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">routine_param</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">query_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;routine&#39;</span><span class="p">)</span>
+        <span class="n">routine_id</span> <span class="o">=</span> <span class="n">routine_param</span> <span class="k">if</span> <span class="n">routine_param</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">pk</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">int</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">api_error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pk</span><span class="si">}</span><span class="s2"> not a valid type&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">pk</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">api_error</span><span class="p">(</span><span class="s2">&quot;invalid user id&quot;</span><span class="p">)</span>
+
+        <span class="n">routines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">pk</span><span class="p">,</span> <span class="n">routine_id</span><span class="o">=</span><span class="n">routine_id</span><span class="p">)</span>
+
+        <span class="n">serializer_data</span> <span class="o">=</span> <span class="n">FitnessRoutineSerializer</span><span class="p">(</span><span class="n">routines</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+
+        <span class="n">in_response</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">distinct_exercises</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">exercise_ids</span> <span class="o">=</span> <span class="p">{</span><span class="n">serializer</span><span class="p">[</span><span class="s1">&#39;exercise&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">serializer</span> <span class="ow">in</span> <span class="n">serializer_data</span><span class="p">}</span>
+        <span class="n">user_exercises</span> <span class="o">=</span> <span class="p">{</span><span class="n">ue</span><span class="o">.</span><span class="n">pk</span><span class="p">:</span> <span class="n">ue</span> <span class="k">for</span> <span class="n">ue</span> <span class="ow">in</span> <span class="n">UserExercise</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pk__in</span><span class="o">=</span><span class="n">exercise_ids</span><span class="p">)}</span>
+        <span class="n">exercise_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">e</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span>
+                        <span class="n">Exercise</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">id__in</span><span class="o">=</span><span class="p">[</span><span class="n">ue</span><span class="o">.</span><span class="n">exercise</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">ue</span> <span class="ow">in</span> <span class="n">user_exercises</span><span class="o">.</span><span class="n">values</span><span class="p">()])}</span>
+
+        <span class="k">for</span> <span class="n">serializer</span> <span class="ow">in</span> <span class="n">serializer_data</span><span class="p">:</span>
+            <span class="n">user_exercise</span> <span class="o">=</span> <span class="n">user_exercises</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">serializer</span><span class="p">[</span><span class="s1">&#39;exercise&#39;</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">user_exercise</span><span class="p">:</span>
+                <span class="k">continue</span>  <span class="c1"># Skip if user_exercise doesn&#39;t exist</span>
+
+            <span class="n">exercises</span> <span class="o">=</span> <span class="p">[</span><span class="n">exercise_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user_exercise</span><span class="o">.</span><span class="n">exercise</span><span class="o">.</span><span class="n">id</span><span class="p">)]</span>
+            <span class="n">exercises_serializer</span> <span class="o">=</span> <span class="n">GetExercisesSerializer</span><span class="p">(</span><span class="n">exercises</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+
+            <span class="n">user_exercises_serializer</span> <span class="o">=</span> <span class="n">UserExerciseSerializer</span><span class="p">(</span><span class="n">user_exercise</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">user_exercises_serializer</span><span class="p">[</span><span class="s1">&#39;exercise&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">exercises_serializer</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="n">routine_id</span> <span class="o">=</span> <span class="n">serializer</span><span class="p">[</span><span class="s1">&#39;routine_id&#39;</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">routine_id</span> <span class="ow">in</span> <span class="n">distinct_exercises</span><span class="p">:</span>
+                <span class="n">distinct_exercises</span><span class="p">[</span><span class="n">routine_id</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">user_exercises_serializer</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">distinct_exercises</span><span class="p">[</span><span class="n">routine_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">user_exercises_serializer</span><span class="p">]</span>
+                <span class="n">serializer</span><span class="p">[</span><span class="s1">&#39;exercises&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">distinct_exercises</span><span class="p">[</span><span class="n">routine_id</span><span class="p">]</span>
+                <span class="n">in_response</span><span class="p">[</span><span class="n">routine_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">serializer</span>
+
+            <span class="n">serializer</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;exercise&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">api_success</span><span class="p">(</span><span class="n">in_response</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="FitnessRoutineView.put">
+<a class="viewcode-back" href="../../autoapi/routines/views/index.html#routines.views.FitnessRoutineView.put">[docs]</a>
+    <span class="nd">@transaction</span><span class="o">.</span><span class="n">atomic</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates an existing fitness routine.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            request (HttpRequest): The HTTP request object. The request data should contain</span>
+<span class="sd">                the updated routine information, including exercises and their durations.</span>
+<span class="sd">            pk (int): The user ID.</span>
+<span class="sd">            format (str, optional): The request format. Defaults to None.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Response: An api_success response containing the updated routine data.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            UserExercise.DoesNotExist: If a UserExercise with the given ID does not exist.</span>
+<span class="sd">            Exercise.DoesNotExist: If an Exercise with the given ID does not exist.</span>
+<span class="sd">            KeyError: If a required key is missing from the request data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">exercise_list</span><span class="p">,</span> <span class="n">existing_routine_data</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">{}</span>
+
+            <span class="n">exercises</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;exercises&#39;</span><span class="p">]</span>
+
+            <span class="n">existing_routine</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">del_routine</span> <span class="o">=</span> <span class="n">FitnessRoutine</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">pk</span><span class="p">)</span> \
+                <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">routine_id</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;routine_id&#39;</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">del_routine</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="k">return</span> <span class="n">api_error</span><span class="p">(</span><span class="s2">&quot;Record does not exist&quot;</span><span class="p">)</span>
+
+            <span class="n">mod_routine</span> <span class="o">=</span> <span class="n">del_routine</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">del_routine</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">exercise</span> <span class="ow">in</span> <span class="n">exercises</span><span class="p">:</span>
+                <span class="n">ex_key</span> <span class="o">=</span> <span class="n">exercise</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_exercise_id&#39;</span><span class="p">)</span>
+                <span class="n">exercise_obj</span> <span class="o">=</span> <span class="n">Exercise</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">exercise</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
+                <span class="n">hours</span><span class="p">,</span> <span class="n">minutes</span><span class="p">,</span> <span class="n">seconds</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">exercise</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">))</span>
+                <span class="n">user_exercise</span><span class="p">,</span> <span class="n">created</span> <span class="o">=</span> <span class="n">UserExercise</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">update_or_create</span><span class="p">(</span>
+                    <span class="nb">id</span><span class="o">=</span><span class="n">exercise</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_exercise_id&#39;</span><span class="p">),</span>  <span class="c1"># The lookup field (determines existence)</span>
+                    <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;duration&quot;</span><span class="p">:</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="n">minutes</span><span class="p">,</span> <span class="n">seconds</span><span class="o">=</span><span class="n">seconds</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="n">hours</span><span class="p">),</span>
+                              <span class="s2">&quot;exercise&quot;</span><span class="p">:</span> <span class="n">exercise_obj</span><span class="p">,</span> <span class="s2">&quot;completed&quot;</span><span class="p">:</span> <span class="n">exercise</span><span class="p">[</span><span class="s2">&quot;completed&quot;</span><span class="p">]}</span>
+                    <span class="c1"># Fields to update if found, or set if created</span>
+                <span class="p">)</span>
+
+                <span class="n">existing_routine</span><span class="p">,</span> <span class="n">created</span> <span class="o">=</span> <span class="n">FitnessRoutine</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">update_or_create</span><span class="p">(</span>
+                    <span class="n">user</span><span class="o">=</span><span class="n">mod_routine</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+                    <span class="n">exercise</span><span class="o">=</span><span class="n">user_exercise</span><span class="p">,</span>
+                    <span class="n">defaults</span><span class="o">=</span><span class="p">{</span>
+                        <span class="s2">&quot;start_date&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;meal_date_time&quot;</span><span class="p">),</span>
+                        <span class="s2">&quot;routine_name&quot;</span><span class="p">:</span> <span class="n">check_none</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;routine_name&quot;</span><span class="p">),</span> <span class="n">mod_routine</span><span class="o">.</span><span class="n">routine_name</span><span class="p">),</span>
+                        <span class="s2">&quot;routine_id&quot;</span><span class="p">:</span> <span class="n">mod_routine</span><span class="o">.</span><span class="n">routine_id</span><span class="p">,</span>
+                        <span class="s2">&quot;completed&quot;</span><span class="p">:</span> <span class="n">check_none</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;completed&quot;</span><span class="p">),</span> <span class="n">mod_routine</span><span class="o">.</span><span class="n">completed</span><span class="p">),</span>
+                    <span class="p">}</span>
+                <span class="p">)</span>
+
+                <span class="n">exercise_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">UserExerciseSerializer</span><span class="p">(</span><span class="n">user_exercise</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+
+            <span class="n">existing_routine_data</span> <span class="o">=</span> <span class="n">FitnessRoutineSerializer</span><span class="p">(</span><span class="n">existing_routine</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">existing_routine_data</span><span class="p">[</span><span class="s1">&#39;exercises&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">exercise_list</span>
+            <span class="k">return</span> <span class="n">api_success</span><span class="p">(</span><span class="n">existing_routine_data</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">UserExercise</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">,</span> <span class="n">Exercise</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">api_error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FitnessRoutineView.delete">
+<a class="viewcode-back" href="../../autoapi/routines/views/index.html#routines.views.FitnessRoutineView.delete">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Deletes a fitness routine.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            request (HttpRequest): The HTTP request object.</span>
+<span class="sd">            pk (int): The user ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Response: An api_success response indicating the routine was deleted.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">routine_param</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">query_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;routine&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">routine_param</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">api_error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">routine_param</span><span class="si">}</span><span class="s2"> not a valid type&quot;</span><span class="p">)</span>
+        <span class="n">snippet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">routine_param</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">snippet</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">api_success</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No routine matching this id: </span><span class="si">{</span><span class="n">routine_param</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">snippet</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">api_success</span><span class="p">(</span><span class="s2">&quot;Routine was deleted.&quot;</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, UP2160428.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

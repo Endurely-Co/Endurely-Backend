@@ -1,0 +1,21 @@
+onboarding
+==========
+
+.. py:module:: onboarding
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/onboarding/acct_type/index
+   /autoapi/onboarding/apps/index
+   /autoapi/onboarding/models/index
+   /autoapi/onboarding/serializers/index
+   /autoapi/onboarding/tests/index
+   /autoapi/onboarding/urls/index
+   /autoapi/onboarding/views/index
+
+

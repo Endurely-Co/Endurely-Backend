@@ -1,0 +1,145 @@
+meal.models
+===========
+
+.. py:module:: meal.models
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   meal.models.MealInfo
+   meal.models.NutritionInfo
+   meal.models.FoodItem
+   meal.models.MealPlan
+   meal.models.MealRecommendation
+   meal.models.Nutrient
+
+
+Module Contents
+---------------
+
+.. py:class:: MealInfo(*args, **kwargs)
+
+   Bases: :py:obj:`django.db.models.Model`
+
+
+   Make subclasses preserve the alters_data attribute on overridden methods.
+
+
+   .. py:attribute:: meal
+
+
+   .. py:attribute:: calorie
+
+
+   .. py:attribute:: created_at
+
+
+.. py:class:: NutritionInfo(*args, **kwargs)
+
+   Bases: :py:obj:`django.db.models.Model`
+
+
+   Make subclasses preserve the alters_data attribute on overridden methods.
+
+
+   .. py:attribute:: created_at
+
+
+   .. py:attribute:: nutrient
+
+
+   .. py:attribute:: food_name
+
+
+   .. py:attribute:: user
+
+
+.. py:class:: FoodItem(*args, **kwargs)
+
+   Bases: :py:obj:`django.db.models.Model`
+
+
+   Make subclasses preserve the alters_data attribute on overridden methods.
+
+
+   .. py:attribute:: item
+
+
+   .. py:attribute:: valid
+
+
+   .. py:attribute:: macronutrients
+
+
+   .. py:attribute:: vitamins
+
+
+   .. py:attribute:: minerals
+
+
+   .. py:attribute:: other_nutrients
+
+
+   .. py:method:: __str__()
+
+
+.. py:class:: MealPlan(*args, **kwargs)
+
+   Bases: :py:obj:`django.db.models.Model`
+
+
+   Make subclasses preserve the alters_data attribute on overridden methods.
+
+
+   .. py:attribute:: created_at
+
+
+   .. py:attribute:: user
+
+
+   .. py:attribute:: food_item
+
+
+   .. py:attribute:: food_name
+
+
+   .. py:attribute:: meal_plan_id
+
+
+   .. py:attribute:: meal_date_time
+
+
+.. py:class:: MealRecommendation(*args, **kwargs)
+
+   Bases: :py:obj:`django.db.models.Model`
+
+
+   Make subclasses preserve the alters_data attribute on overridden methods.
+
+
+   .. py:attribute:: created_at
+
+
+   .. py:attribute:: recommended_meal
+
+
+.. py:class:: Nutrient(*args, **kwargs)
+
+   Bases: :py:obj:`django.db.models.Model`
+
+
+   Make subclasses preserve the alters_data attribute on overridden methods.
+
+
+   .. py:attribute:: name
+
+
+   .. py:attribute:: summary
+
+
+   .. py:method:: __str__()
+
+

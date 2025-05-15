@@ -1,0 +1,29 @@
+onboarding.acct_type
+====================
+
+.. py:module:: onboarding.acct_type
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   onboarding.acct_type.AccountType
+
+
+Module Contents
+---------------
+
+.. py:class:: AccountType
+
+   .. py:attribute:: verify
+      :value: 'verify'
+
+
+
+   .. py:attribute:: unverify
+      :value: 'unverify'
+
+
+

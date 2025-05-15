@@ -1,0 +1,365 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>meal.tests.testcase_meal_plan &mdash; mydoc  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            mydoc
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">mydoc</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">meal.tests.testcase_meal_plan</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for meal.tests.testcase_meal_plan</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">unittest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">raiseExceptions</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">unittest.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">patch</span><span class="p">,</span> <span class="n">MagicMock</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractUser</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">meal.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">FoodItem</span><span class="p">,</span> <span class="n">MealPlan</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">meal.tests.factory.meal_plan_factory</span><span class="w"> </span><span class="kn">import</span> <span class="n">MealPlanFactory</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">utils.api</span><span class="w"> </span><span class="kn">import</span> <span class="n">api_success</span><span class="p">,</span> <span class="n">api_error</span><span class="p">,</span> <span class="n">api_created_success</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">utils.validator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Status</span>
+
+
+
+<div class="viewcode-block" id="MealPlanViewTestCase">
+<a class="viewcode-back" href="../../../autoapi/meal/tests/testcase_meal_plan/index.html#meal.tests.testcase_meal_plan.MealPlanViewTestCase">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MealPlanViewTestCase</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="MealPlanViewTestCase.setUp">
+<a class="viewcode-back" href="../../../autoapi/meal/tests/testcase_meal_plan/index.html#meal.tests.testcase_meal_plan.MealPlanViewTestCase.setUp">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">factory</span> <span class="o">=</span> <span class="n">MealPlanFactory</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="MealPlanViewTestCase.test_get_meal_plans_failed">
+<a class="viewcode-back" href="../../../autoapi/meal/tests/testcase_meal_plan/index.html#meal.tests.testcase_meal_plan.MealPlanViewTestCase.test_get_meal_plans_failed">[docs]</a>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;meal.views.api_success&#39;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;meal.views.FoodItemSerializer&#39;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;meal.views.MealPlanSerializer&#39;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;meal.views.MealPlan.objects&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_get_meal_plans_failed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_meal_plan_objs</span><span class="p">,</span> <span class="n">mock_mp_serializer_class</span><span class="p">,</span>
+                                   <span class="n">mock_fi_serializer_class</span><span class="p">,</span> <span class="n">mock_api_success</span><span class="p">):</span>
+        <span class="n">user_id</span><span class="p">,</span> <span class="n">meal_plan_id</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span>
+        <span class="n">mock_meal_plan_qs</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_user_by_id_qs</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="n">mock_meal_plan_objs</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user_id</span><span class="p">)</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_user_by_id_qs</span>
+        <span class="n">mock_meal_plan_objs</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">meal_plan_id</span><span class="o">=</span><span class="n">meal_plan_id</span><span class="p">)</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_meal_plan_qs</span>
+
+        <span class="n">mock_meal_plan_objs</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user_id</span><span class="p">)</span>
+
+        <span class="c1"># check meal plan</span>
+        <span class="n">mock_meal_plan_objs</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user_id</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="n">meal_plan_id</span><span class="o">=</span><span class="n">meal_plan_id</span><span class="p">)</span>
+
+        <span class="n">mock_meal_plan_serializer</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_meal_plan_serializer</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="s1">&#39;test&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;created_at&#39;</span><span class="p">:</span> <span class="s1">&#39;2025-04-24T18:38:54.732192Z&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="s1">&#39;food_item&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="s1">&#39;food_name&#39;</span><span class="p">:</span> <span class="s1">&#39;Eba and Egusi&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;meal_plan_id&#39;</span><span class="p">:</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;meal_date_time&#39;</span><span class="p">:</span> <span class="s1">&#39;2025-04-24T18:38:54.732192Z&#39;</span>
+            <span class="p">}</span>
+        <span class="p">]</span>
+        <span class="n">mock_mp_serializer_class</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_meal_plan_serializer</span>
+
+        <span class="n">mock_fi_serializer</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_fi_serializer</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="p">]</span>
+        <span class="n">mock_fi_serializer_class</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_fi_serializer</span>
+        <span class="n">mock_api_success</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">api_success</span><span class="p">(</span><span class="n">mock_meal_plan_serializer</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">return_value</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">get_plan_by_id</span><span class="p">(</span><span class="n">user_id</span><span class="o">=</span><span class="n">user_id</span><span class="p">,</span> <span class="n">plan_id</span><span class="o">=</span><span class="n">meal_plan_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="n">mock_meal_plan_serializer</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">return_value</span><span class="p">})</span>
+        <span class="n">mock_api_success</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="MealPlanViewTestCase.test_no_meal_plans">
+<a class="viewcode-back" href="../../../autoapi/meal/tests/testcase_meal_plan/index.html#meal.tests.testcase_meal_plan.MealPlanViewTestCase.test_no_meal_plans">[docs]</a>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;meal.views.api_error&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_no_meal_plans</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_api_error</span><span class="p">):</span>
+        <span class="n">mock_api_error</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">api_error</span><span class="p">(</span><span class="s1">&#39;meal_plans is absent&#39;</span><span class="p">)</span>
+        <span class="n">mock_request</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_request</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">add_meal_plan</span><span class="p">(</span><span class="n">mock_request</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">return_value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="n">Status</span><span class="o">.</span><span class="n">INVALID_REQUEST</span><span class="p">)</span>
+        <span class="n">mock_api_error</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s1">&#39;meal_plans is absent&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MealPlanViewTestCase.test_invalid_meal_plans">
+<a class="viewcode-back" href="../../../autoapi/meal/tests/testcase_meal_plan/index.html#meal.tests.testcase_meal_plan.MealPlanViewTestCase.test_invalid_meal_plans">[docs]</a>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;meal.views.api_error&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_invalid_meal_plans</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_api_error</span><span class="p">):</span>
+        <span class="n">error_msg</span> <span class="o">=</span> <span class="s1">&#39;meal_plans is not valid. Expected: list of meal plans&#39;</span>
+        <span class="n">mock_api_error</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">api_error</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+        <span class="n">mock_request</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_request</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;meal_plans&#39;</span><span class="p">:</span> <span class="s1">&#39;eba&#39;</span><span class="p">}</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">add_meal_plan</span><span class="p">(</span><span class="n">mock_request</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">return_value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="n">Status</span><span class="o">.</span><span class="n">INVALID_REQUEST</span><span class="p">)</span>
+        <span class="n">mock_api_error</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MealPlanViewTestCase.test_meal_plan_exceed_size">
+<a class="viewcode-back" href="../../../autoapi/meal/tests/testcase_meal_plan/index.html#meal.tests.testcase_meal_plan.MealPlanViewTestCase.test_meal_plan_exceed_size">[docs]</a>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;meal.views.api_error&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_meal_plan_exceed_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_api_error</span><span class="p">):</span>
+        <span class="n">mock_request</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">error_msg</span> <span class="o">=</span> <span class="s1">&#39;meal_plans too many meal plans&#39;</span>
+        <span class="n">meal_plans</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;meal&quot;</span><span class="p">:</span> <span class="s2">&quot;berries&quot;</span><span class="p">,</span> <span class="s2">&quot;food_item_id&quot;</span><span class="p">:</span> <span class="n">i</span><span class="p">}</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)]</span>
+        <span class="n">mock_request</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+                                          <span class="s2">&quot;meal_date_time&quot;</span><span class="p">:</span> <span class="s2">&quot;2025-03-10T22:43:29.105481Z&quot;</span><span class="p">,</span>
+                                          <span class="s2">&quot;meal_plans&quot;</span><span class="p">:</span> <span class="n">meal_plans</span>
+                                          <span class="p">}</span>
+        <span class="n">mock_api_error</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">api_error</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">add_meal_plan</span><span class="p">(</span><span class="n">mock_request</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">return_value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="n">Status</span><span class="o">.</span><span class="n">INVALID_REQUEST</span><span class="p">)</span>
+        <span class="n">mock_api_error</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="MealPlanViewTestCase.test_meal_plan_user_failed">
+<a class="viewcode-back" href="../../../autoapi/meal/tests/testcase_meal_plan/index.html#meal.tests.testcase_meal_plan.MealPlanViewTestCase.test_meal_plan_user_failed">[docs]</a>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;meal.views.transaction&#39;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;meal.views.User.objects&#39;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;meal.views.FoodItem.objects&#39;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;meal.views.api_error&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_meal_plan_user_failed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_api_error</span><span class="p">,</span> <span class="n">mock_fi_objs</span><span class="p">,</span> <span class="n">mock_user_objs</span><span class="p">,</span> <span class="n">mock_transaction</span><span class="p">):</span>
+        <span class="n">err_msg</span> <span class="o">=</span> <span class="s2">&quot;food item doesn&#39;t exist&quot;</span>
+        <span class="n">mock_request</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">user_id</span> <span class="o">=</span> <span class="mi">20</span>
+        <span class="n">meal_plans</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;meal&quot;</span><span class="p">:</span> <span class="s2">&quot;berries&quot;</span><span class="p">,</span> <span class="s2">&quot;food_item_id&quot;</span><span class="p">:</span> <span class="n">i</span><span class="p">}</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)]</span>
+        <span class="n">mock_request</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="n">user_id</span><span class="p">,</span>
+                                          <span class="s2">&quot;meal_date_time&quot;</span><span class="p">:</span> <span class="s2">&quot;2025-03-10T22:43:29.105481Z&quot;</span><span class="p">,</span>
+                                          <span class="s2">&quot;meal_plans&quot;</span><span class="p">:</span> <span class="n">meal_plans</span>
+                                          <span class="p">}</span>
+
+        <span class="n">mock_atomic</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_transaction</span><span class="o">.</span><span class="n">atomic</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_atomic</span>
+
+        <span class="n">mock_user</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_user</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">user_id</span><span class="p">)</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_user</span>
+        <span class="n">mock_user_objs</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_user</span>
+
+        <span class="c1"># test food doesn&#39;t exist</span>
+        <span class="n">mock_fi_objs</span><span class="o">.</span><span class="n">get</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">FoodItem</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
+        <span class="n">mock_api_error</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">api_error</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">add_meal_plan</span><span class="p">(</span><span class="n">mock_request</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">return_value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="n">Status</span><span class="o">.</span><span class="n">INVALID_REQUEST</span><span class="p">)</span>
+        <span class="n">mock_api_error</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span></div>
+
+
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Test meal plan does not exists</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="MealPlanViewTestCase.test_post_meal_plan_not_exist">
+<a class="viewcode-back" href="../../../autoapi/meal/tests/testcase_meal_plan/index.html#meal.tests.testcase_meal_plan.MealPlanViewTestCase.test_post_meal_plan_not_exist">[docs]</a>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;meal.views.api_created_success&#39;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;meal.views.update_or_create_meal_plan&#39;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;meal.views.transaction&#39;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;meal.views.User.objects&#39;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;meal.views.FoodItem.objects&#39;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;meal.views.MealPlan.objects.get&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_post_meal_plan_not_exist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_meal_plan_get</span><span class="p">,</span> <span class="n">mock_fi_objs</span><span class="p">,</span> <span class="n">mock_user_objs</span><span class="p">,</span>
+                            <span class="n">mock_transaction</span><span class="p">,</span> <span class="n">mock_update_or_create_meal_plan</span><span class="p">,</span>
+                            <span class="n">mock_api_created_success</span><span class="p">):</span>
+        <span class="n">success_res</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Meal plan added successfully&quot;</span><span class="p">}</span>
+        <span class="n">mock_request</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">user_id</span> <span class="o">=</span> <span class="mi">20</span>
+        <span class="n">meal_plans</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;meal&quot;</span><span class="p">:</span> <span class="s2">&quot;berries&quot;</span><span class="p">,</span> <span class="s2">&quot;food_item_id&quot;</span><span class="p">:</span> <span class="n">i</span><span class="p">}</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)]</span>
+        <span class="n">mock_request</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;user&quot;</span><span class="p">:</span><span class="n">user_id</span> <span class="p">,</span>
+                                          <span class="s2">&quot;meal_date_time&quot;</span><span class="p">:</span> <span class="s2">&quot;2025-03-10T22:43:29.105481Z&quot;</span><span class="p">,</span>
+                                          <span class="s2">&quot;meal_plans&quot;</span><span class="p">:</span> <span class="n">meal_plans</span>
+                                          <span class="p">}</span>
+        <span class="c1"># Provide values for mocks</span>
+        <span class="n">mock_user_objs</span><span class="o">.</span><span class="n">get</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">user_id</span>
+        <span class="n">mock_fi_objs</span><span class="o">.</span><span class="n">get</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="mi">3</span>
+
+        <span class="n">mock_atomic</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_transaction</span><span class="o">.</span><span class="n">atomic</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_atomic</span>
+        <span class="n">mock_api_created_success</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">api_created_success</span><span class="p">(</span><span class="n">success_res</span><span class="p">)</span>
+
+       <span class="c1"># mock_meal_plan = mock_meal_plan_get.return_value</span>
+        <span class="n">mock_meal_plan_get</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">MealPlan</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">(</span><span class="s1">&#39;meal_plan already exists&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Test meal already exists</span>
+        <span class="n">mock_update_or_create_meal_plan</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">True</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">add_meal_plan</span><span class="p">(</span><span class="n">mock_request</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">return_value</span><span class="p">)</span>
+        <span class="n">mock_update_or_create_meal_plan</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s1">&#39;012&#39;</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span>
+                                                           <span class="n">mock_request</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">return_value</span><span class="p">[</span><span class="s1">&#39;meal_date_time&#39;</span><span class="p">],</span>
+                                                           <span class="n">mock_fi_objs</span><span class="o">.</span><span class="n">get</span><span class="o">.</span><span class="n">return_value</span><span class="p">)</span>
+        <span class="n">mock_transaction</span><span class="o">.</span><span class="n">atomic</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;response.data&#39;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">mock_api_created_success</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="n">success_res</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">201</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="n">success_res</span><span class="p">})</span></div>
+
+
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Test meal plan already exists</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="MealPlanViewTestCase.test_post_meal_plan_meal_exist">
+<a class="viewcode-back" href="../../../autoapi/meal/tests/testcase_meal_plan/index.html#meal.tests.testcase_meal_plan.MealPlanViewTestCase.test_post_meal_plan_meal_exist">[docs]</a>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;meal.views.api_created_success&#39;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;meal.views.transaction&#39;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;meal.views.User.objects&#39;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;meal.views.FoodItem.objects&#39;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;meal.views.MealPlan.objects.get&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_post_meal_plan_meal_exist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_meal_plan_get</span><span class="p">,</span> <span class="n">mock_fi_objs</span><span class="p">,</span> <span class="n">mock_user_objs</span><span class="p">,</span>
+                            <span class="n">mock_transaction</span><span class="p">,</span> <span class="n">mock_api_created_success</span><span class="p">):</span>
+        <span class="n">success_res</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Meal plan added successfully&quot;</span><span class="p">}</span>
+        <span class="n">mock_request</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">user_id</span> <span class="o">=</span> <span class="mi">20</span>
+        <span class="n">meal_plans</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;meal&quot;</span><span class="p">:</span> <span class="s2">&quot;berries&quot;</span><span class="p">,</span> <span class="s2">&quot;food_item_id&quot;</span><span class="p">:</span> <span class="n">i</span><span class="p">}</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)]</span>
+        <span class="n">mock_request</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;user&quot;</span><span class="p">:</span><span class="n">user_id</span> <span class="p">,</span>
+                                          <span class="s2">&quot;meal_date_time&quot;</span><span class="p">:</span> <span class="s2">&quot;2025-03-10T22:43:29.105481Z&quot;</span><span class="p">,</span>
+                                          <span class="s2">&quot;meal_plans&quot;</span><span class="p">:</span> <span class="n">meal_plans</span>
+                                          <span class="p">}</span>
+        <span class="c1"># Provide values for mocks</span>
+        <span class="n">mock_user_objs</span><span class="o">.</span><span class="n">get</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">user_id</span>
+        <span class="n">mock_fi_objs</span><span class="o">.</span><span class="n">get</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="mi">3</span>
+
+        <span class="n">mock_api_created_success</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">api_created_success</span><span class="p">(</span><span class="n">success_res</span><span class="p">)</span>
+
+        <span class="n">mock_atomic</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_transaction</span><span class="o">.</span><span class="n">atomic</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_atomic</span>
+        <span class="n">mock_meal_plan_get</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">api_created_success</span><span class="p">(</span><span class="n">success_res</span><span class="p">)</span>
+
+        <span class="n">mock_meal_plan</span> <span class="o">=</span> <span class="n">mock_meal_plan_get</span><span class="o">.</span><span class="n">return_value</span>
+        <span class="n">mock_meal_plan</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">add_meal_plan</span><span class="p">(</span><span class="n">mock_request</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">return_value</span><span class="p">)</span>
+
+        <span class="n">mock_transaction</span><span class="o">.</span><span class="n">atomic</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span>
+        <span class="n">mock_api_created_success</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="n">success_res</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">201</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="n">success_res</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="MealPlanViewTestCase.test_delete_meal_plan">
+<a class="viewcode-back" href="../../../autoapi/meal/tests/testcase_meal_plan/index.html#meal.tests.testcase_meal_plan.MealPlanViewTestCase.test_delete_meal_plan">[docs]</a>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;meal.views.api_error&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_delete_meal_plan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_api_error</span><span class="p">):</span>
+        <span class="n">user_id</span><span class="p">,</span> <span class="n">plan_id</span> <span class="o">=</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">2</span>
+        <span class="n">mock_api_error</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">api_error</span><span class="p">(</span><span class="s1">&#39;plan_id is required&#39;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">delete_meal_plan</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">user_id</span><span class="p">)</span>
+        <span class="c1"># check that api_error is called</span>
+        <span class="n">mock_api_error</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s1">&#39;plan_id is required&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="n">Status</span><span class="o">.</span><span class="n">INVALID_REQUEST</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MealPlanViewTestCase.test_delete_meal_plan_empty_plan_id">
+<a class="viewcode-back" href="../../../autoapi/meal/tests/testcase_meal_plan/index.html#meal.tests.testcase_meal_plan.MealPlanViewTestCase.test_delete_meal_plan_empty_plan_id">[docs]</a>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;meal.views.api_error&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_delete_meal_plan_empty_plan_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_api_error</span><span class="p">):</span>
+        <span class="n">user_id</span><span class="p">,</span> <span class="n">plan_id</span> <span class="o">=</span> <span class="mi">22</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="n">mock_api_error</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">api_error</span><span class="p">(</span><span class="s1">&#39;plan_id is required&#39;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">delete_meal_plan</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">user_id</span><span class="p">)</span>
+        <span class="c1"># check that api_error is called</span>
+        <span class="n">mock_api_error</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s1">&#39;plan_id is required&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="n">Status</span><span class="o">.</span><span class="n">INVALID_REQUEST</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MealPlanViewTestCase.doCleanups">
+<a class="viewcode-back" href="../../../autoapi/meal/tests/testcase_meal_plan/index.html#meal.tests.testcase_meal_plan.MealPlanViewTestCase.doCleanups">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">doCleanups</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">tear_down</span><span class="p">()</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, UP2160428.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

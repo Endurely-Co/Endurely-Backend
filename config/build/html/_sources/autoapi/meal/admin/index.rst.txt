@@ -1,0 +1,6 @@
+meal.admin
+==========
+
+.. py:module:: meal.admin
+
+

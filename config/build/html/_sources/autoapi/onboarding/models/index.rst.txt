@@ -1,0 +1,37 @@
+onboarding.models
+=================
+
+.. py:module:: onboarding.models
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   onboarding.models.OTP
+
+
+Module Contents
+---------------
+
+.. py:class:: OTP(*args, **kwargs)
+
+   Bases: :py:obj:`django.db.models.Model`
+
+
+   Make subclasses preserve the alters_data attribute on overridden methods.
+
+
+   .. py:attribute:: user
+
+
+   .. py:attribute:: otp
+
+
+   .. py:attribute:: created_at
+
+
+   .. py:attribute:: expiry_time
+
+

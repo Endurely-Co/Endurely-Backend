@@ -1,0 +1,123 @@
+routines.views
+==============
+
+.. py:module:: routines.views
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   routines.views.GetExercises
+   routines.views.FitnessRoutineView
+
+
+Module Contents
+---------------
+
+.. py:class:: GetExercises(**kwargs)
+
+   Bases: :py:obj:`utils.api_ext.AuthenticatedAPIView`
+
+
+   API view to retrieve all exercises.
+
+
+   .. py:method:: get(_)
+
+      Retrieves all exercises from the database, ordered by category.
+
+      :returns: An api_success response containing serialized exercise data.
+      :rtype: Response
+
+
+
+.. py:class:: FitnessRoutineView(**kwargs)
+
+   Bases: :py:obj:`utils.api_ext.AuthenticatedAPIView`
+
+
+   API view to handle fitness routine operations (create, retrieve, update, delete).
+
+
+   .. py:method:: get_object(pk, routine_id=None)
+
+      Retrieves FitnessRoutine objects based on user ID and optionally a routine ID.
+
+      :param pk: User ID.
+      :type pk: int
+      :param routine_id: Routine ID. Defaults to None.
+      :type routine_id: str, optional
+
+      :returns: A queryset of FitnessRoutine objects.
+      :rtype: QuerySet
+
+      :raises Http404: If no FitnessRoutine is found for the given criteria.
+
+
+
+   .. py:method:: post(request)
+
+      Creates a new fitness routine.
+
+      :param request: The HTTP request object. The request data should contain
+                      a list of exercises with their IDs and durations.
+      :type request: HttpRequest
+
+      :returns: An api_created_success response containing the created routine data.
+      :rtype: Response
+
+
+
+   .. py:method:: get(request, pk=0)
+
+      Retrieves fitness routines for a given user, optionally filtered by routine ID.
+
+      :param request: The HTTP request object.
+      :type request: HttpRequest
+      :param pk: User ID.
+      :type pk: int
+      :param routine_id: Routine ID. Defaults to None.
+      :type routine_id: str, optional
+
+      :returns: An api_success response containing the serialized routine data.
+      :rtype: Response
+
+
+
+   .. py:method:: put(request, pk, format=None)
+
+      Updates an existing fitness routine.
+
+      :param request: The HTTP request object. The request data should contain
+                      the updated routine information, including exercises and their durations.
+      :type request: HttpRequest
+      :param pk: The user ID.
+      :type pk: int
+      :param format: The request format. Defaults to None.
+      :type format: str, optional
+
+      :returns: An api_success response containing the updated routine data.
+      :rtype: Response
+
+      :raises UserExercise.DoesNotExist: If a UserExercise with the given ID does not exist.
+      :raises Exercise.DoesNotExist: If an Exercise with the given ID does not exist.
+      :raises KeyError: If a required key is missing from the request data.
+
+
+
+   .. py:method:: delete(request, pk)
+
+      Deletes a fitness routine.
+
+      :param request: The HTTP request object.
+      :type request: HttpRequest
+      :param pk: The user ID.
+      :type pk: int
+
+      :returns: An api_success response indicating the routine was deleted.
+      :rtype: Response
+
+
+

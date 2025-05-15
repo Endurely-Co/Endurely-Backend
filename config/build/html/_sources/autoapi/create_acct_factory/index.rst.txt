@@ -1,0 +1,45 @@
+create_acct_factory
+===================
+
+.. py:module:: create_acct_factory
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   create_acct_factory.CreateAcctFactory
+
+
+Module Contents
+---------------
+
+.. py:class:: CreateAcctFactory(**defaults)
+
+   Bases: :py:obj:`rest_framework.test.APIRequestFactory`
+
+
+   Class that lets you create mock Request objects for use in testing.
+
+   Usage:
+
+   rf = RequestFactory()
+   get_request = rf.get('/hello/')
+   post_request = rf.post('/submit/', {'foo': 'bar'})
+
+   Once you have a request object you can pass it to any view function,
+   just as if that view had been hooked up using a URLconf.
+
+
+   .. py:attribute:: base_path
+      :value: '/create-user'
+
+
+
+   .. py:attribute:: view
+
+
+   .. py:method:: create_acct(data)
+
+

@@ -1,0 +1,104 @@
+routines.models
+===============
+
+.. py:module:: routines.models
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   routines.models.Exercise
+   routines.models.UserExercise
+   routines.models.FitnessRoutine
+
+
+Module Contents
+---------------
+
+.. py:class:: Exercise(*args, **kwargs)
+
+   Bases: :py:obj:`django.db.models.Model`
+
+
+   Make subclasses preserve the alters_data attribute on overridden methods.
+
+
+   .. py:attribute:: CATEGORY_CHOICES
+      :value: [('UB', 'Upper Body'), ('LB', 'Lower Body'), ('CO', 'Core & Abs'), ('EX', 'Explosive & Athletic...
+
+
+
+   .. py:attribute:: key
+
+
+   .. py:attribute:: name
+
+
+   .. py:attribute:: description
+
+
+   .. py:attribute:: category
+
+
+   .. py:method:: __str__()
+
+
+.. py:class:: UserExercise(*args, **kwargs)
+
+   Bases: :py:obj:`django.db.models.Model`
+
+
+   Make subclasses preserve the alters_data attribute on overridden methods.
+
+
+   .. py:attribute:: duration
+
+
+   .. py:attribute:: created_at
+
+
+   .. py:attribute:: image
+
+
+   .. py:attribute:: completed
+
+
+   .. py:attribute:: exercise
+
+
+.. py:class:: FitnessRoutine(*args, **kwargs)
+
+   Bases: :py:obj:`django.db.models.Model`
+
+
+   Make subclasses preserve the alters_data attribute on overridden methods.
+
+
+   .. py:attribute:: WEEK_DAYS
+      :value: [('mon', 'Monday'), ('tue', 'Tuesday'), ('wed', 'Wednesday'), ('thu', 'Thursday'), ('fri',...
+
+
+
+   .. py:attribute:: user
+
+
+   .. py:attribute:: exercise
+
+
+   .. py:attribute:: routine_name
+
+
+   .. py:attribute:: routine_id
+
+
+   .. py:attribute:: completed
+
+
+   .. py:attribute:: created_at
+
+
+   .. py:attribute:: start_date
+
+

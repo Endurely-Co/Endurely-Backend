@@ -1,0 +1,21 @@
+meal
+====
+
+.. py:module:: meal
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/meal/admin/index
+   /autoapi/meal/apps/index
+   /autoapi/meal/models/index
+   /autoapi/meal/serializers/index
+   /autoapi/meal/tests/index
+   /autoapi/meal/urls/index
+   /autoapi/meal/views/index
+
+

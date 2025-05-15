@@ -1,0 +1,45 @@
+meal_plan_factory
+=================
+
+.. py:module:: meal_plan_factory
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   meal_plan_factory.MealPlanFactory
+
+
+Module Contents
+---------------
+
+.. py:class:: MealPlanFactory
+
+   .. py:attribute:: base_path
+      :value: '/plan'
+
+
+
+   .. py:attribute:: factory
+
+
+   .. py:attribute:: view
+
+
+   .. py:method:: get_plans()
+
+
+   .. py:method:: get_plan_by_id(user_id, plan_id)
+
+
+   .. py:method:: add_meal_plan(data)
+
+
+   .. py:method:: delete_meal_plan(plan_id, user_id)
+
+
+   .. py:method:: tear_down()
+
+

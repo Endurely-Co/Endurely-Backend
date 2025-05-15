@@ -1,0 +1,43 @@
+routine_factory
+===============
+
+.. py:module:: routine_factory
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   routine_factory.FitnessRoutineViewFactory
+
+
+Module Contents
+---------------
+
+.. py:class:: FitnessRoutineViewFactory(**kwargs)
+
+   Bases: :py:obj:`rest_framework.test.APIRequestFactory`
+
+
+   Class that lets you create mock Request objects for use in testing.
+
+   Usage:
+
+   rf = RequestFactory()
+   get_request = rf.get('/hello/')
+   post_request = rf.post('/submit/', {'foo': 'bar'})
+
+   Once you have a request object you can pass it to any view function,
+   just as if that view had been hooked up using a URLconf.
+
+
+   .. py:attribute:: view
+
+
+   .. py:method:: add_exercise(exercise)
+
+
+   .. py:method:: get_view()
+
+

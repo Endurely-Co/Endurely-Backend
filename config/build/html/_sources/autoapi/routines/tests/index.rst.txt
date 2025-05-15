@@ -1,0 +1,15 @@
+routines.tests
+==============
+
+.. py:module:: routines.tests
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/routines/tests/testcase_exercises/index
+
+

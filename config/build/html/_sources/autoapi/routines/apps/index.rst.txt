@@ -1,0 +1,35 @@
+routines.apps
+=============
+
+.. py:module:: routines.apps
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   routines.apps.RoutinesConfig
+
+
+Module Contents
+---------------
+
+.. py:class:: RoutinesConfig(app_name, app_module)
+
+   Bases: :py:obj:`django.apps.AppConfig`
+
+
+   Class representing a Django application and its configuration.
+
+
+   .. py:attribute:: default_auto_field
+      :value: 'django.db.models.BigAutoField'
+
+
+
+   .. py:attribute:: name
+      :value: 'routines'
+
+
+

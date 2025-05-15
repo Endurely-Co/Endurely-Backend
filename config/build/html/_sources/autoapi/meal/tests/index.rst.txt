@@ -1,0 +1,18 @@
+meal.tests
+==========
+
+.. py:module:: meal.tests
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/meal/tests/conftest/index
+   /autoapi/meal/tests/testcase_meal_plan/index
+   /autoapi/meal/tests/testcase_meal_recomm/index
+   /autoapi/meal/tests/testcase_nutrient/index
+
+

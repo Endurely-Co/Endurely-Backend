@@ -1,0 +1,399 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>routines.tests.testcase_exercises &mdash; mydoc  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            mydoc
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">mydoc</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">routines.tests.testcase_exercises</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for routines.tests.testcase_exercises</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">unittest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">unittest.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">patch</span><span class="p">,</span> <span class="n">MagicMock</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">Http404</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">utils.api</span><span class="w"> </span><span class="kn">import</span> <span class="n">api_error</span><span class="p">,</span> <span class="n">api_success</span><span class="p">,</span> <span class="n">api_created_success</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.factory.exercise_factory</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExerciseFactory</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.factory.routine_factory</span><span class="w"> </span><span class="kn">import</span> <span class="n">FitnessRoutineViewFactory</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">routines.views</span><span class="w"> </span><span class="kn">import</span> <span class="n">FitnessRoutineView</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..models</span><span class="w"> </span><span class="kn">import</span> <span class="n">FitnessRoutine</span>
+
+
+<div class="viewcode-block" id="TestCaseExercises">
+<a class="viewcode-back" href="../../../autoapi/routines/tests/testcase_exercises/index.html#routines.tests.testcase_exercises.TestCaseExercises">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TestCaseExercises</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestCaseExercises.setUp">
+<a class="viewcode-back" href="../../../autoapi/routines/tests/testcase_exercises/index.html#routines.tests.testcase_exercises.TestCaseExercises.setUp">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">factory</span> <span class="o">=</span> <span class="n">ExerciseFactory</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestCaseExercises.test_get_exercise_error">
+<a class="viewcode-back" href="../../../autoapi/routines/tests/testcase_exercises/index.html#routines.tests.testcase_exercises.TestCaseExercises.test_get_exercise_error">[docs]</a>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;routines.views.api_error&#39;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;routines.views.Exercise.objects&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_get_exercise_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_exercise_objs</span><span class="p">,</span> <span class="n">mock_api_error</span><span class="p">):</span>
+        <span class="n">error_msg</span> <span class="o">=</span> <span class="s1">&#39;Invalid server error&#39;</span>
+        <span class="n">mock_exercise_objs</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+        <span class="n">mock_api_error</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">api_error</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">get_exercises</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">({</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="n">error_msg</span><span class="p">,</span> <span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="mi">400</span><span class="p">},</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">mock_api_error</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestCaseExercises.test_get_exercise_success">
+<a class="viewcode-back" href="../../../autoapi/routines/tests/testcase_exercises/index.html#routines.tests.testcase_exercises.TestCaseExercises.test_get_exercise_success">[docs]</a>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;routines.views.api_success&#39;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;routines.views.GetExercisesSerializer&#39;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;routines.views.Exercise.objects&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_get_exercise_success</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_exercise_objs</span><span class="p">,</span> <span class="n">mock_get_exercises_serializer</span><span class="p">,</span> <span class="n">mock_api_success</span><span class="p">):</span>
+        <span class="n">mock_exercise_objs</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_exercise_objs</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">order_by</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">fake_response</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">194</span><span class="p">,</span>
+                <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;RUN01&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Running&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;1. Maintain a steady pace with proper posture.</span><span class="se">\n</span><span class="s2">2. Control your breathing.</span><span class="se">\n</span><span class="s2">3. Adjust speed based on endurance goals.&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="s2">&quot;CM&quot;</span>
+            <span class="p">}]</span>
+        <span class="n">mock_api_success</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">api_success</span><span class="p">(</span><span class="n">fake_response</span><span class="p">)</span>
+        <span class="n">mock_get_exercises_serializer</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">fake_response</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">get_exercises</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">({</span><span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="n">fake_response</span><span class="p">},</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">mock_exercise_objs</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">order_by</span><span class="o">.</span><span class="n">assert_called</span><span class="p">()</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TestCaseFitnessRoutine">
+<a class="viewcode-back" href="../../../autoapi/routines/tests/testcase_exercises/index.html#routines.tests.testcase_exercises.TestCaseFitnessRoutine">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TestCaseFitnessRoutine</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestCaseFitnessRoutine.setUp">
+<a class="viewcode-back" href="../../../autoapi/routines/tests/testcase_exercises/index.html#routines.tests.testcase_exercises.TestCaseFitnessRoutine.setUp">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">factory</span> <span class="o">=</span> <span class="n">FitnessRoutineViewFactory</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TestCaseFitnessRoutine.test_add_exercise_routine_invalid_exercise">
+<a class="viewcode-back" href="../../../autoapi/routines/tests/testcase_exercises/index.html#routines.tests.testcase_exercises.TestCaseFitnessRoutine.test_add_exercise_routine_invalid_exercise">[docs]</a>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;routines.views.api_error&#39;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;routines.views.transaction&#39;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;routines.views.Exercise.objects&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_add_exercise_routine_invalid_exercise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_exercise_objs</span><span class="p">,</span>
+                                                   <span class="n">mock_transaction</span><span class="p">,</span> <span class="n">mock_api_error</span><span class="p">):</span>
+        <span class="n">request_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;exercises&#39;</span><span class="p">:</span> <span class="p">[{</span>
+                <span class="s2">&quot;duration&quot;</span><span class="p">:</span> <span class="s2">&quot;00:31:00&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">221</span>
+            <span class="p">},</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;duration&quot;</span><span class="p">:</span> <span class="s2">&quot;03:23:22&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">123</span>
+                <span class="p">}</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+        <span class="n">mock_exercises</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+            <span class="n">mock_exercise</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+            <span class="n">mock_exercise</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="n">mock_exercises</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mock_exercise</span><span class="p">)</span>
+        <span class="n">mock_exercise_objs</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_exercises</span>
+        <span class="n">mock_transaction</span><span class="o">.</span><span class="n">atomic</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_api_error</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">api_error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exercise with ID 221 not found&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">add_exercise</span><span class="p">(</span><span class="n">request_data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">({</span><span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="s1">&#39;Exercise with ID 221 not found&#39;</span><span class="p">,</span> <span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="mi">400</span><span class="p">},</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">mock_api_error</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;Exercise with ID 221 not found&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestCaseFitnessRoutine.test_add_exercise_routine_success">
+<a class="viewcode-back" href="../../../autoapi/routines/tests/testcase_exercises/index.html#routines.tests.testcase_exercises.TestCaseFitnessRoutine.test_add_exercise_routine_success">[docs]</a>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;routines.views.uuid&#39;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;routines.views.GetExercisesSerializer&#39;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;routines.views.UserExerciseSerializer&#39;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;routines.views.FitnessRoutineSerializer&#39;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;routines.views.transaction&#39;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;routines.views.api_created_success&#39;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;routines.views.UserExercise.objects&#39;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;routines.views.Exercise.objects&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_add_exercise_routine_success</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_exercise_objs</span><span class="p">,</span> <span class="n">mock_user_exercise_objs</span><span class="p">,</span>
+                                          <span class="n">mock_api_created_success</span><span class="p">,</span> <span class="n">mock_transaction</span><span class="p">,</span> <span class="n">mock_routine_serializer</span><span class="p">,</span>
+                                          <span class="n">mock_user_exercise_serializer_obj</span><span class="p">,</span> <span class="n">mock_get_exercises_serializer</span><span class="p">,</span>
+                                          <span class="n">mock_uuid</span><span class="p">):</span>
+        <span class="n">mock_uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">hex</span> <span class="o">=</span> <span class="s1">&#39;bf02e92d1ccb4ebbae6da36954f9db20&#39;</span>
+
+        <span class="n">mock_atomic_transaction</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_transaction</span><span class="o">.</span><span class="n">atomic</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_atomic_transaction</span>
+
+        <span class="c1"># filter on exercise</span>
+        <span class="n">mock_exercise</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_exercise</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s1">&#39;TRICEP01&#39;</span>
+        <span class="n">mock_exercise</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Tricep Extension&#39;</span>
+        <span class="n">mock_exercise</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;1. Hold a dumbbell overhead with both hands.</span><span class="se">\n</span><span class="s1">2. Lower it behind your head by bending your elbows.</span><span class="se">\n</span><span class="s1">3. Extend your arms back to the starting position.&#39;</span>
+        <span class="n">mock_exercise</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="mi">179</span>
+        <span class="n">mock_exercise</span><span class="o">.</span><span class="n">category</span> <span class="o">=</span> <span class="s1">&#39;UB&#39;</span>
+        <span class="n">mock_exercise_objs</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span><span class="n">mock_exercise</span><span class="p">]</span>
+
+        <span class="c1"># mock UserExercise</span>
+        <span class="n">mock_user_exercise</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_user_exercise</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="mi">123</span>
+        <span class="n">mock_user_exercise_objs</span><span class="o">.</span><span class="n">create</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_user_exercise</span>
+
+        <span class="c1"># mocking FitnessRoutineSerializer</span>
+        <span class="n">mock_routine_serializer</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_routine_serializer</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">is_valid</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">mock_routine_serializer</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">save</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># mocking UserExercise</span>
+        <span class="n">mock_user_exercise_serializer_obj</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>  <span class="c1"># might neeed to change this to a dictionary</span>
+        <span class="n">mock_user_exercise_serializer_obj</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">313</span><span class="p">,</span>
+            <span class="s2">&quot;duration&quot;</span><span class="p">:</span> <span class="s2">&quot;00:31:00&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;completed&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">fake_exercise</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">179</span><span class="p">,</span>
+            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;TRICEP01&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Tricep Extension&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;1. Hold a dumbbell overhead with both hands.</span><span class="se">\n</span><span class="s2">2. Lower it behind your head by bending your elbows.</span><span class="se">\n</span><span class="s2">3. Extend your arms back to the starting position.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="s2">&quot;UB&quot;</span>
+        <span class="p">}</span>
+        <span class="n">mock_get_exercises_serializer</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_get_exercises_serializer</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">fake_exercise</span>
+
+        <span class="n">expected_response</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="mi">19</span><span class="p">,</span>
+            <span class="s2">&quot;exercises&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">313</span><span class="p">,</span>
+                 <span class="s2">&quot;duration&quot;</span><span class="p">:</span> <span class="s2">&quot;00:31:00&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;completed&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                 <span class="s2">&quot;exercise&quot;</span><span class="p">:</span> <span class="n">fake_exercise</span>
+                 <span class="p">}</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;routine_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Small belly with broad shoulder&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;start_date&quot;</span><span class="p">:</span> <span class="s2">&quot;2025-04-20T10:45:56.667726Z&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;completed&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;routine_id&quot;</span><span class="p">:</span> <span class="s2">&quot;bf02e92d1ccb4ebbae6da36954f9db20&quot;</span>
+        <span class="p">}</span>
+
+        <span class="c1"># mock_request_data = MagicMock()</span>
+        <span class="c1"># mock_request_data.data.return_value = request_data</span>
+        <span class="n">mock_api_created_success</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">api_created_success</span><span class="p">(</span><span class="n">expected_response</span><span class="p">)</span>
+
+        <span class="n">mock_req_data</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_req_data</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="mi">19</span><span class="p">,</span>
+            <span class="s1">&#39;exercises&#39;</span><span class="p">:</span> <span class="p">[{</span>
+                <span class="s2">&quot;duration&quot;</span><span class="p">:</span> <span class="s2">&quot;00:31:00&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">179</span>
+            <span class="p">}</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;routine_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Small belly with broad shoulder&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;start_date&quot;</span><span class="p">:</span> <span class="s2">&quot;2025-04-20T10:45:56.667726Z&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;completed&quot;</span><span class="p">:</span> <span class="kc">False</span>
+        <span class="p">}</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">add_exercise</span><span class="p">(</span><span class="n">mock_req_data</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">return_value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">201</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">({</span><span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="n">expected_response</span><span class="p">},</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">mock_api_created_success</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="n">expected_response</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestCaseFitnessRoutine.test_get_object_success">
+<a class="viewcode-back" href="../../../autoapi/routines/tests/testcase_exercises/index.html#routines.tests.testcase_exercises.TestCaseFitnessRoutine.test_get_object_success">[docs]</a>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;routines.views.FitnessRoutine.objects&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_get_object_success</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_fitness_routine_objs</span><span class="p">):</span>
+        <span class="n">pk</span><span class="p">,</span> <span class="n">routine_id</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span>
+        <span class="n">mock_fitness_routine</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_fitness_routine_objs</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_fitness_routine</span>
+        <span class="n">mock_fitness_routine_by_id</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_fitness_routine_objs</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_fitness_routine_by_id</span>
+        <span class="n">FitnessRoutineView</span><span class="p">()</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">routine_id</span><span class="p">)</span>
+        <span class="n">mock_fitness_routine_objs</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">pk</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="TestCaseFitnessRoutine.test_get_object_raised_exception">
+<a class="viewcode-back" href="../../../autoapi/routines/tests/testcase_exercises/index.html#routines.tests.testcase_exercises.TestCaseFitnessRoutine.test_get_object_raised_exception">[docs]</a>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;routines.views.FitnessRoutine.objects&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_get_object_raised_exception</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_fitness_routine_objs</span><span class="p">):</span>
+        <span class="n">pk</span><span class="p">,</span> <span class="n">routine_id</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">21</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">Http404</span><span class="p">):</span>
+            <span class="n">mock_fitness_routine_objs</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">FitnessRoutine</span><span class="o">.</span><span class="n">DoesNotExist</span>
+            <span class="n">FitnessRoutineView</span><span class="p">()</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="n">pk</span><span class="p">,</span> <span class="n">routine_id</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="TestCaseFitnessRoutine.test_no_exercise_provided">
+<a class="viewcode-back" href="../../../autoapi/routines/tests/testcase_exercises/index.html#routines.tests.testcase_exercises.TestCaseFitnessRoutine.test_no_exercise_provided">[docs]</a>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;routines.views.api_error&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_no_exercise_provided</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_api_error</span><span class="p">):</span>
+        <span class="n">err_msg</span> <span class="o">=</span> <span class="s2">&quot;No exercises provided&quot;</span>
+        <span class="n">mock_request_data</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_request_data</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">mock_api_error</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">api_error</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">add_exercise</span><span class="p">(</span><span class="n">mock_request_data</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">({</span><span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="mi">400</span><span class="p">,</span> <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="n">err_msg</span><span class="p">},</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="TestCaseFitnessRoutine.test_invalid_request">
+<a class="viewcode-back" href="../../../autoapi/routines/tests/testcase_exercises/index.html#routines.tests.testcase_exercises.TestCaseFitnessRoutine.test_invalid_request">[docs]</a>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;routines.views.UserExercise.objects&#39;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;routines.views.Exercise.objects&#39;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;routines.views.transaction&#39;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;routines.views.FitnessRoutineSerializer&#39;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;routines.views.api_error&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_invalid_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_api_error</span><span class="p">,</span> <span class="n">mock_routines_serializer</span><span class="p">,</span> <span class="n">mock_transaction</span><span class="p">,</span>
+                             <span class="n">mock_exercise_objs</span><span class="p">,</span> <span class="n">mock_user_exercise_objs</span><span class="p">):</span>
+        <span class="n">mock_transaction</span><span class="o">.</span><span class="n">atomic</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_exercise_objs</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+
+        <span class="n">err_messages</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;Invalid request&#39;</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="n">mock_routines_serializer</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_routines_serializer</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">is_valid</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">mock_routines_serializer</span><span class="o">.</span><span class="n">return_value</span><span class="o">.</span><span class="n">errors</span> <span class="o">=</span> <span class="n">err_messages</span>
+
+
+        <span class="c1"># filter on exercise</span>
+        <span class="n">mock_exercise</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_exercise</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s1">&#39;TRICEP01&#39;</span>
+        <span class="n">mock_exercise</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Tricep Extension&#39;</span>
+        <span class="n">mock_exercise</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;1. Hold a dumbbell overhead with both hands.</span><span class="se">\n</span><span class="s1">2. Lower it behind your head by bending your elbows.</span><span class="se">\n</span><span class="s1">3. Extend your arms back to the starting position.&#39;</span>
+        <span class="n">mock_exercise</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="mi">179</span>
+        <span class="n">mock_exercise</span><span class="o">.</span><span class="n">category</span> <span class="o">=</span> <span class="s1">&#39;UB&#39;</span>
+        <span class="n">mock_exercise_objs</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span><span class="n">mock_exercise</span><span class="p">]</span>
+
+        <span class="c1"># mock UserExercise</span>
+        <span class="n">mock_user_exercise</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_user_exercise</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="mi">13</span>
+        <span class="n">mock_user_exercise_objs</span><span class="o">.</span><span class="n">create</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">mock_user_exercise</span>
+
+        <span class="n">mock_api_error</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">api_error</span><span class="p">(</span><span class="n">err_messages</span><span class="p">)</span>
+
+        <span class="n">mock_req_data</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="n">mock_req_data</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="mi">19</span><span class="p">,</span>
+            <span class="s1">&#39;exercises&#39;</span><span class="p">:</span> <span class="p">[{</span>
+                <span class="s2">&quot;duration&quot;</span><span class="p">:</span> <span class="s2">&quot;00:31:00&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">179</span>
+            <span class="p">}</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;routine_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Small belly with broad shoulder&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;start_date&quot;</span><span class="p">:</span> <span class="s2">&quot;2025-04-20T10:45:56.667726Z&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;completed&quot;</span><span class="p">:</span> <span class="kc">False</span>
+        <span class="p">}</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">add_exercise</span><span class="p">(</span><span class="n">mock_req_data</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">return_value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">({</span><span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="mi">400</span><span class="p">,</span> <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="n">err_messages</span><span class="p">},</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">mock_api_error</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="n">err_messages</span><span class="p">)</span></div>
+</div>
+
+
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, UP2160428.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,48 @@
+nutrient_factory
+================
+
+.. py:module:: nutrient_factory
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   nutrient_factory.NutrientFactory
+
+
+Module Contents
+---------------
+
+.. py:class:: NutrientFactory(**defaults)
+
+   Bases: :py:obj:`rest_framework.test.APIRequestFactory`
+
+
+   Class that lets you create mock Request objects for use in testing.
+
+   Usage:
+
+   rf = RequestFactory()
+   get_request = rf.get('/hello/')
+   post_request = rf.post('/submit/', {'foo': 'bar'})
+
+   Once you have a request object you can pass it to any view function,
+   just as if that view had been hooked up using a URLconf.
+
+
+   .. py:attribute:: base_path
+      :value: '/nutrient'
+
+
+
+   .. py:attribute:: view
+
+
+   .. py:method:: get_nutrients(user_id)
+
+
+   .. py:method:: add_nutrients(data)
+
+

@@ -1,0 +1,133 @@
+meal.views
+==========
+
+.. py:module:: meal.views
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   meal.views.MealRecommendationView
+   meal.views.MealPlanView
+   meal.views.NutrientView
+
+
+Module Contents
+---------------
+
+.. py:class:: MealRecommendationView(**kwargs)
+
+   Bases: :py:obj:`utils.api_ext.AuthenticatedAPIView`
+
+
+   This view is deprecated and should not be used.
+   It was intended to retrieve and create MealInfo objects.
+
+
+   .. py:method:: get(_)
+
+      Retrieves all MealInfo objects.
+
+      :returns: A list of serialized MealInfo objects if successful.
+                api_error: An error message if an exception occurs.
+      :rtype: api_success
+
+
+
+   .. py:method:: post(request, *args, **kwargs)
+
+      Creates a new MealInfo object.
+
+      :param request: The HTTP request object containing the MealInfo data.
+
+      :returns: The serialized MealInfo object if creation is successful.
+                api_error: An error message if the data is invalid.
+      :rtype: api_created_success
+
+
+
+.. py:class:: MealPlanView(**kwargs)
+
+   Bases: :py:obj:`utils.api_ext.AuthenticatedAPIView`
+
+
+   This view handles operations related to MealPlan objects,
+   including retrieving, deleting, and creating meal plans.
+
+
+   .. py:method:: get(request, user_id)
+
+      Retrieves MealPlan objects for a specific user.
+
+      :param request: The HTTP request object.
+      :param user_id: The ID of the user whose meal plans are to be retrieved.
+
+      :returns: A list of serialized MealPlan objects with associated food item nutrients.
+      :rtype: api_success
+
+
+
+   .. py:method:: delete(request, user_id)
+
+      Deletes a specific MealPlan object for a user.
+
+      :param request: The HTTP request object.
+      :param user_id: The ID of the user whose meal plan is to be deleted.
+
+      :returns: A success message if the meal plan is deleted.
+                api_error: An error message if the plan_id is missing or an exception occurs.
+      :rtype: api_success
+
+
+
+   .. py:method:: post(request, *args, **kwargs)
+
+      Creates MealPlan objects for a user.
+
+      :param request: The HTTP request object containing meal plan data.
+
+      :returns: A success message if meal plans are created successfully.
+                api_error: An error message if there are issues with the input data, user, or food item.
+      :rtype: api_created_success
+
+
+
+.. py:class:: NutrientView(**kwargs)
+
+   Bases: :py:obj:`utils.api_ext.AuthenticatedAPIView`
+
+
+   This view handles operations related to retrieving nutrient information
+   and fetching nutrient data for food items using Gemini API.
+
+
+   .. py:attribute:: gemini
+
+
+   .. py:method:: get(_, user_id)
+
+      Retrieves meal plan data with associated nutrient information for a user.
+
+      :param _: The HTTP request object (not used).
+      :param user_id: The ID of the user.
+
+      :returns: Meal plan data with 'other_nutrients' from the associated food items.
+      :rtype: api_success
+
+
+
+   .. py:method:: post(request)
+
+      Retrieves nutrient information for given food items, either from the database
+      or using the Gemini API.  Creates FoodItem objects if they don't exist in the database.
+
+      :param request: The HTTP request object containing the user ID and meal (food items).
+
+      :returns: Nutrient information for the food items.
+                api_error: An error message if input is invalid or an issue occurs during processing.
+      :rtype: api_created_success
+
+
+

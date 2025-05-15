@@ -1,0 +1,114 @@
+onboarding.views
+================
+
+.. py:module:: onboarding.views
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   onboarding.views.CreateAccountView
+   onboarding.views.LoginView
+   onboarding.views.Logout
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   onboarding.views.get_tokens_for_user
+
+
+Module Contents
+---------------
+
+.. py:class:: CreateAccountView(**kwargs)
+
+   Bases: :py:obj:`rest_framework.generics.CreateAPIView`
+
+
+   API view to create a new user account.
+
+   This view handles user registration, including validation of input data
+   and creation of a new user in the database.
+
+
+   .. py:attribute:: serializer_class
+
+
+   .. py:method:: post(request, *args, **kwargs)
+
+      Handles the POST request to create a new user account.
+
+      :param request: The request object containing user data.
+      :type request: Request
+      :param \*args: Additional positional arguments.
+      :param \*\*kwargs: Additional keyword arguments.
+
+      :returns: A JSON response indicating success or failure.
+      :rtype: Response
+
+
+
+.. py:function:: get_tokens_for_user(user)
+
+   Generates JWT tokens (refresh and access) for a given user.
+
+   :param user: The user object for whom to generate tokens.
+   :type user: User
+
+   :returns: A dictionary containing the refresh and access tokens.
+   :rtype: dict
+
+
+.. py:class:: LoginView(**kwargs)
+
+   Bases: :py:obj:`rest_framework.views.APIView`
+
+
+   API view to handle user login and token generation.
+
+   Authenticates the user based on username and password and returns JWT tokens
+   upon successful authentication.
+
+
+   .. py:method:: post(request)
+
+      Handles the POST request for user login.
+
+      :param request: The request object containing username and password.
+      :type request: Request
+
+      :returns:
+
+                A JSON response containing user details and tokens upon successful login,
+                          or an error message upon failure.
+      :rtype: Response
+
+
+
+.. py:class:: Logout(**kwargs)
+
+   Bases: :py:obj:`rest_framework.views.APIView`
+
+
+   API view to handle user logout.
+
+   Invalidates the user's session by calling the `logout` function.
+
+
+   .. py:method:: get(request)
+
+      Handles the GET request for user logout.
+
+      :param request: The request object.
+      :type request: Request
+
+      :returns: A 200 OK response indicating successful logout.
+      :rtype: Response
+
+
+

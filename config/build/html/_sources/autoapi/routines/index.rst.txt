@@ -1,0 +1,21 @@
+routines
+========
+
+.. py:module:: routines
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/routines/admin/index
+   /autoapi/routines/apps/index
+   /autoapi/routines/models/index
+   /autoapi/routines/serializers/index
+   /autoapi/routines/tests/index
+   /autoapi/routines/urls/index
+   /autoapi/routines/views/index
+
+
