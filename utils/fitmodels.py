@@ -5,10 +5,39 @@ from meal.models import MealPlan
 
 
 class FitModel(models.Model):
+    """
+    An abstract base model that provides a timestamp for creation.
+
+    Attributes:
+        created_at (DateTimeField): A timestamp indicating when the object was created.
+                                       Defaults to the current time and is non-nullable.
+    """
     created_at = models.DateTimeField(default=now, null=False)
 
+    class Meta:
+        abstract = True
 
-def update_or_create_meal_plan(meal_plan_id, user, meal_date_time, food_item=None):
+
+def update_or_create_meal_plan(meal_plan_id: str, user, meal_date_time, food_item=None):
+    """
+    Updates an existing MealPlan instance or creates a new one.
+
+    The lookup is based on the meal_plan_id and user. If a matching MealPlan exists,
+    its fields are updated with the provided defaults. Otherwise, a new MealPlan
+    instance is created with the given meal_plan_id, user, and defaults.
+
+    Args:
+        meal_plan_id (str): The unique identifier for the meal plan.
+        user: The user associated with the meal plan.
+        meal_date_time: The date and time of the meal.
+        food_item: An optional FoodItem instance to associate with the meal plan.
+                   Defaults to None.
+
+    Returns:
+        tuple: A tuple containing the MealPlan instance (the updated or created one)
+               and a boolean value indicating if a new meal plan was created (True) or
+               an existing one was updated (False).
+    """
     defaults = {
         "user": user,
     }
@@ -28,7 +57,26 @@ def update_or_create_meal_plan(meal_plan_id, user, meal_date_time, food_item=Non
     return meal_plan, created
 
 
-def update_or_create_meal_plan_date(meal_plan_id, user, meal_date_time, food_item=None):
+def update_or_create_meal_plan_date(meal_plan_id: str, user, meal_date_time, food_item=None):
+    """
+    Updates an existing MealPlan instance or creates a new one based on meal date and plan ID.
+
+    The lookup is based on the meal_date_time and meal_plan_id. If a matching MealPlan
+    exists, its fields are updated with the provided defaults. Otherwise, a new MealPlan
+    instance is created with the given meal_date_time, meal_plan_id, and defaults.
+
+    Args:
+        meal_plan_id (str): The unique identifier for the meal plan.
+        user: The user associated with the meal plan.
+        meal_date_time: The specific date and time of the meal to look up or create.
+        food_item: An optional FoodItem instance to associate with the meal plan.
+                   Defaults to None.
+
+    Returns:
+        tuple: A tuple containing the MealPlan instance (the updated or created one)
+               and a boolean value indicating if a new meal plan was created (True) or
+               an existing one was updated (False).
+    """
     defaults = {
         "user": user,
     }
@@ -42,14 +90,3 @@ def update_or_create_meal_plan_date(meal_plan_id, user, meal_date_time, food_ite
         defaults=defaults
     )
     return meal_plan, created
-
-
-"""
-MealPlan.objects.update_or_create(
-                    user=user,
-                    meal_plan_id=plan_id,
-                    food_name=plan['meal'],
-                    food_item=food_item,
-                    meal_date_time=request.data['meal_date_time']
-                )
-"""

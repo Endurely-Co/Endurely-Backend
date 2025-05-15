@@ -13,7 +13,7 @@
 .git
 myvenv
 .idea
-
+config
 
 # Python pycache:
 __pycache__/

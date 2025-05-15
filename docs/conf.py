@@ -24,10 +24,19 @@ extensions = [
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 autoapi_type = 'python'
-autoapi_dirs = ['../meal', '../onboarding', '../routines']
+autoapi_dirs = ['../meal', '../onboarding', '../routines', '../utils']
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'alabaster'
+html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
+
+
+import os
+import sys
+import django
+
+sys.path.insert(0, os.path.abspath('../..'))  # path to project root
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "your_project_name.settings")
+django.setup()
